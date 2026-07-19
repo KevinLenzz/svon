@@ -1,0 +1,7 @@
+import {
+  "username/svon" @svon,
+}
+supported_targets = "js"
+options(
+  "is-main": true,
+)

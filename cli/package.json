@@ -1,0 +1,23 @@
+{
+  "name": "svon",
+  "version": "0.1.0",
+  "description": "CLI compiler for Svon reactive MoonBit templates",
+  "main": "svonc.js",
+  "bin": {
+    "svonc": "./svonc"
+  },
+  "files": [
+    "svonc.js",
+    "svonc",
+    "README.md"
+  ],
+  "keywords": ["svon", "svelte", "moonbit", "template", "compiler", "reactive"],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/username/svon"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

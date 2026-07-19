@@ -1,0 +1,4 @@
+import {
+  "username/svon/compiler" @compiler,
+}
+options("is-main": true)

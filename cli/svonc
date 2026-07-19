@@ -1,0 +1,5 @@
+#!/usr/bin/env node
+// svonc — Svon template compiler
+// The compiled MoonBit code reads process.argv.slice(2) directly.
+// We just need to require it — it runs main() as an IIFE.
+require("./svonc.js");

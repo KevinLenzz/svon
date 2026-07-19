@@ -1,0 +1,173 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Svon Template",
+  "scopeName": "source.svon",
+  "patterns": [
+    {
+      "include": "#svon-template"
+    }
+  ],
+  "repository": {
+    "svon-template": {
+      "patterns": [
+        {
+          "include": "#script-moonbit-block"
+        },
+        {
+          "include": "#svon-expression"
+        },
+        {
+          "include": "#html-comment"
+        },
+        {
+          "include": "text.html.derivative"
+        }
+      ]
+    },
+    "script-moonbit-block": {
+      "name": "meta.embedded.block.moonbit",
+      "begin": "(<)(script)\\b(?:[^>]*\\blang\\s*=\\s*\"moonbit\"[^>]*)>",
+      "beginCaptures": {
+        "1": { "name": "punctuation.definition.tag.begin.html" },
+        "2": { "name": "entity.name.tag.script.html" }
+      },
+      "end": "(</)(script)\\s*(>)",
+      "endCaptures": {
+        "1": { "name": "punctuation.definition.tag.begin.html" },
+        "2": { "name": "entity.name.tag.script.html" },
+        "3": { "name": "punctuation.definition.tag.end.html" }
+      },
+      "contentName": "source.moonbit",
+      "patterns": [
+        {
+          "include": "#moonbit-syntax"
+        }
+      ]
+    },
+    "svon-expression": {
+      "name": "meta.embedded.expression.moonbit",
+      "begin": "\\{(?!\\s*[{#/:@])",
+      "end": "\\}",
+      "beginCaptures": {
+        "0": { "name": "punctuation.definition.expression.begin.svon" }
+      },
+      "endCaptures": {
+        "0": { "name": "punctuation.definition.expression.end.svon" }
+      },
+      "contentName": "source.moonbit.expression",
+      "patterns": [
+        {
+          "include": "#moonbit-syntax"
+        }
+      ]
+    },
+    "html-comment": {
+      "name": "comment.block.html",
+      "begin": "<!--",
+      "end": "-->",
+      "captures": {
+        "0": { "name": "punctuation.definition.comment.html" }
+      }
+    },
+    "moonbit-syntax": {
+      "patterns": [
+        {
+          "include": "#moonbit-keywords"
+        },
+        {
+          "include": "#moonbit-types"
+        },
+        {
+          "include": "#moonbit-strings"
+        },
+        {
+          "include": "#moonbit-comments"
+        },
+        {
+          "include": "#moonbit-numbers"
+        },
+        {
+          "include": "#moonbit-operators"
+        },
+        {
+          "include": "#moonbit-functions"
+        }
+      ]
+    },
+    "moonbit-keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.moonbit",
+          "match": "\\b(fn|let|mut|if|else|match|while|for|continue|break|return|in|as|is|raise|catch|try|noraise|type|enum|struct|trait|impl|pub|priv|extern|test|async|derive)\\b"
+        },
+        {
+          "name": "keyword.other.moonbit",
+          "match": "\\b(true|false|self|this|super|import)\\b"
+        },
+        {
+          "name": "support.function.reactive.svon",
+          "match": "\\b(state|derived|effect|read_source|read_derived|write_source|untrack|get|set)\\b"
+        },
+        {
+          "name": "support.function.dom.svon",
+          "match": "\\b(document_create_element|document_create_text_node|node_append_child|node_set_text_content|node_set_attribute|node_add_event_listener|document_body)\\b"
+        }
+      ]
+    },
+    "moonbit-types": {
+      "patterns": [
+        {
+          "name": "storage.type.moonbit",
+          "match": "\\b(Int|Int64|UInt|UInt64|Float|Double|Bool|Char|Byte|String|Bytes|Array|FixedArray|Map|Option|Ref|Unit|Json|Show|Eq|Debug|ToJson|StringBuilder)\\b"
+        }
+      ]
+    },
+    "moonbit-strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.moonbit",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "name": "constant.character.escape.moonbit",
+              "match": "\\\\."
+            }
+          ]
+        }
+      ]
+    },
+    "moonbit-comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.moonbit",
+          "match": "//.*$"
+        }
+      ]
+    },
+    "moonbit-numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.moonbit",
+          "match": "\\b\\d+(\\.\\d+)?\\b"
+        }
+      ]
+    },
+    "moonbit-operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.moonbit",
+          "match": "(==|!=|<=|>=|<|>|&&|\\|\\||!|\\+|\\-|\\*|/|%|\\.)"
+        }
+      ]
+    },
+    "moonbit-functions": {
+      "patterns": [
+        {
+          "name": "entity.name.function.moonbit",
+          "match": "\\b([a-z_][a-zA-Z0-9_]*)\\s*(?=\\(|\\[)"
+        }
+      ]
+    }
+  }
+}

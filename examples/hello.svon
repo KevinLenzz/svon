@@ -1,0 +1,7 @@
+<script lang="moonbit">
+let name = state("World")
+fn update_name() { name.set("Svon") }
+</script>
+
+<h1>Hello {name.get()}!</h1>
+<button onclick={update_name}>Say Svon</button>

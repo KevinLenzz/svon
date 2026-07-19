@@ -1,0 +1,167 @@
+<script lang="moonbit">
+// === Pattern 1: Simple counter with derived ===
+let count = state(0)
+let doubled = derived(fn() { count.get() * 2 })
+let tripled = derived(fn() { count.get() * 3 })
+
+fn inc() { count.set(count.get() + 1) }
+fn dec() { count.set(count.get() - 1) }
+fn reset() { count.set(0) }
+
+// === Pattern 2: Multiple independent states ===
+let price = state(100)
+let quantity = state(1)
+let total = derived(fn() { price.get() * quantity.get() })
+let tax = derived(fn() { total.get() * 20 / 100 })
+
+fn set_price_200() { price.set(200) }
+fn set_price_50() { price.set(50) }
+fn more_qty() { quantity.set(quantity.get() + 1) }
+fn less_qty() { if quantity.get() > 1 { quantity.set(quantity.get() - 1) } }
+
+// === Pattern 3: Text input binding ===
+let name = state("Svon")
+let greeting = derived(fn() { "Hello, " + name.get() + "!" })
+
+// === Pattern 4: Binary state (toggle) ===
+let active = state(true)
+let status_text = derived(fn() { if active.get() { "Active" } else { "Inactive" } })
+let status_class = derived(fn() { if active.get() { "status-on" } else { "status-off" } })
+
+fn toggle() { active.set(!active.get()) }
+
+// === Pattern 5: Chained deriveds ===
+let base = state(10)
+let d1 = derived(fn() { base.get() + 5 })
+let d2 = derived(fn() { d1.get() * 2 })
+let d3 = derived(fn() { d2.get() - 3 })
+
+fn add_base() { base.set(base.get() + 10) }
+fn mul_base() { base.set(base.get() * 2) }
+
+// === Pattern 6: Rapid update (stress test) ===
+let stress = state(0)
+let stress_doubled = derived(fn() { stress.get() * 2 })
+
+fn stress_inc5() {
+  stress.set(stress.get() + 1)
+  stress.set(stress.get() + 2)
+  stress.set(stress.get() + 3)
+  stress.set(stress.get() + 4)
+  stress.set(stress.get() + 5)
+}
+
+fn stress_jump() {
+  stress.set(stress.get() + 100)
+}
+</script>
+
+<div class="test-suite">
+  <!-- Pattern 1: Counter -->
+  <section>
+    <h2>Pattern 1: Counter with Multiple Deriveds</h2>
+    <div class="row">
+      <span class="label">Count:</span>
+      <span class="value">{count.get()}</span>
+    </div>
+    <div class="row">
+      <span class="label">Doubled:</span>
+      <span class="value">{doubled.get()}</span>
+    </div>
+    <div class="row">
+      <span class="label">Tripled:</span>
+      <span class="value">{tripled.get()}</span>
+    </div>
+    <div class="buttons">
+      <button onclick={dec}>−</button>
+      <button onclick={inc}>+</button>
+      <button onclick={reset}>Reset</button>
+    </div>
+  </section>
+
+  <!-- Pattern 2: Shopping Cart -->
+  <section>
+    <h2>Pattern 2: Multi-State Derived (Price × Qty)</h2>
+    <div class="row">
+      <span class="label">Price:</span>
+      <span class="value">{price.get()}</span>
+      <button onclick={set_price_200}>200</button>
+      <button onclick={set_price_50}>50</button>
+    </div>
+    <div class="row">
+      <span class="label">Quantity:</span>
+      <span class="value">{quantity.get()}</span>
+      <button onclick={less_qty}>−</button>
+      <button onclick={more_qty}>+</button>
+    </div>
+    <div class="row">
+      <span class="label">Total:</span>
+      <span class="value">{total.get()}</span>
+    </div>
+    <div class="row">
+      <span class="label">Tax (20%):</span>
+      <span class="value">{tax.get()}</span>
+    </div>
+  </section>
+
+  <!-- Pattern 3: Input Binding -->
+  <section>
+    <h2>Pattern 3: Input Binding</h2>
+    <p>{greeting.get()}</p>
+    <input value={name.get()} />
+    <p class="hint">Type to change the name (input binding WIP)</p>
+  </section>
+
+  <!-- Pattern 4: Toggle -->
+  <section>
+    <h2>Pattern 4: Toggle State</h2>
+    <div class="row">
+      <span class="label">Status:</span>
+      <span class="value">{status_text.get()}</span>
+      <span class="value">{status_class.get()}</span>
+    </div>
+    <button onclick={toggle}>Toggle</button>
+  </section>
+
+  <!-- Pattern 5: Chained Deriveds -->
+  <section>
+    <h2>Pattern 5: Chained Deriveds</h2>
+    <div class="row">
+      <span class="label">base (10):</span>
+      <span class="value">{base.get()}</span>
+    </div>
+    <div class="row">
+      <span class="label">d1 = base+5:</span>
+      <span class="value">{d1.get()}</span>
+    </div>
+    <div class="row">
+      <span class="label">d2 = d1*2:</span>
+      <span class="value">{d2.get()}</span>
+    </div>
+    <div class="row">
+      <span class="label">d3 = d2-3:</span>
+      <span class="value">{d3.get()}</span>
+    </div>
+    <div class="buttons">
+      <button onclick={add_base}>+10</button>
+      <button onclick={mul_base}>×2</button>
+    </div>
+  </section>
+
+  <!-- Pattern 6: Stress Test -->
+  <section>
+    <h2>Pattern 6: Rapid Update Stress Test</h2>
+    <div class="row">
+      <span class="label">Stress:</span>
+      <span class="value">{stress.get()}</span>
+    </div>
+    <div class="row">
+      <span class="label">Doubled:</span>
+      <span class="value">{stress_doubled.get()}</span>
+    </div>
+    <div class="buttons">
+      <button onclick={stress_inc5}>+1,+2,+3,+4,+5 (batch)</button>
+      <button onclick={stress_jump}>+100</button>
+    </div>
+  </section>
+</div>

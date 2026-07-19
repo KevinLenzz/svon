@@ -1,0 +1,17 @@
+.DS_Store
+_build/
+target/
+target
+.mooncakes/
+.moonagent/out/
+out/
+examples/*.mbt
+_build/
+out/
+*.mbti
+node_modules/
+*.vsix
+*.mjs
+cli/package-lock.json
+cmd/pages/main.mbt
+cmd/svonpages/

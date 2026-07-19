@@ -1,0 +1,30 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "scopeName": "source.moonbit.embedded",
+  "injectionSelector": "L:text.html.derivative -comment",
+  "patterns": [
+    {
+      "include": "#svon-moonbit-injection"
+    }
+  ],
+  "repository": {
+    "svon-moonbit-injection": {
+      "name": "meta.embedded.block.moonbit",
+      "contentName": "source.moonbit",
+      "begin": "(<)(script)\\b(?:[^>]*\\blang\\s*=\\s*\"moonbit\"[^>]*)>",
+      "beginCaptures": {
+        "1": { "name": "punctuation.definition.tag.begin.html" },
+        "2": { "name": "entity.name.tag.script.html" }
+      },
+      "end": "(</)(script)\\s*(>)",
+      "endCaptures": {
+        "1": { "name": "punctuation.definition.tag.begin.html" },
+        "2": { "name": "entity.name.tag.script.html" },
+        "3": { "name": "punctuation.definition.tag.end.html" }
+      },
+      "patterns": [
+        { "include": "source.svon#moonbit-syntax" }
+      ]
+    }
+  }
+}

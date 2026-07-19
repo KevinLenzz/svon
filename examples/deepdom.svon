@@ -1,0 +1,57 @@
+<script lang="moonbit">
+let depth_a = state(1)
+let depth_b = state(10)
+let depth_c = state(100)
+
+let da1 = derived(fn() { depth_a.get() * 2 })
+let db1 = derived(fn() { depth_b.get() * 3 })
+let dc1 = derived(fn() { depth_c.get() * 4 })
+let da2 = derived(fn() { da1.get() + db1.get() })
+let db2 = derived(fn() { db1.get() + dc1.get() })
+let total_sum = derived(fn() { da2.get() + db2.get() })
+
+fn inc_a() { depth_a.set(depth_a.get() + 1) }
+fn inc_b() { depth_b.set(depth_b.get() + 1) }
+fn inc_c() { depth_c.set(depth_c.get() + 1) }
+
+</script>
+
+<div>
+  <h2>Deep DOM Nesting Test</h2>
+
+  <section>
+    <h3>Section A — controls depth_a</h3>
+    <p>depth_a: {depth_a.get()}</p>
+    <button onclick={inc_a}>+1</button>
+  </section>
+
+  <section>
+    <h3>Section B — controls depth_b</h3>
+    <p>depth_b: {depth_b.get()}</p>
+    <button onclick={inc_b}>+1</button>
+  </section>
+
+  <section>
+    <h3>Section C — controls depth_c</h3>
+    <p>depth_c: {depth_c.get()}</p>
+    <button onclick={inc_c}>+1</button>
+  </section>
+
+  <section>
+    <h3>Level 1: Derived Values</h3>
+    <p>da1 = depth_a × 2 = {da1.get()}</p>
+    <p>db1 = depth_b × 3 = {db1.get()}</p>
+    <p>dc1 = depth_c × 4 = {dc1.get()}</p>
+  </section>
+
+  <section>
+    <h3>Level 2: Cross-Derived</h3>
+    <p>da2 = da1 + db1 = {da2.get()}</p>
+    <p>db2 = db1 + dc1 = {db2.get()}</p>
+  </section>
+
+  <section>
+    <h3>Level 3: Total</h3>
+    <p>TOTAL = da2 + db2 = {total_sum.get()}</p>
+  </section>
+</div>

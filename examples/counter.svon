@@ -1,0 +1,27 @@
+<script lang="moonbit">
+let count = state(0)
+let doubled = derived(fn() { count.get() * 2 })
+
+fn increment() {
+  count.set(count.get() + 1)
+}
+
+fn decrement() {
+  count.set(count.get() - 1)
+}
+
+fn reset() {
+  count.set(0)
+}
+</script>
+
+<div class="counter">
+  <h1>Svon Counter</h1>
+  <p class="display">Count: {count.get()}</p>
+  <p class="display">Doubled: {doubled.get()}</p>
+  <div class="buttons">
+    <button onclick={decrement}>−</button>
+    <button onclick={increment}>+</button>
+    <button onclick={reset}>Reset</button>
+  </div>
+</div>

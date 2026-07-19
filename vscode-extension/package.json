@@ -1,0 +1,63 @@
+{
+  "name": "svon",
+  "displayName": "Svon — Reactive MoonBit Templates",
+  "description": "Syntax highlighting, diagnostics, and autocomplete for .svon template files",
+  "version": "0.2.0",
+  "publisher": "username",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "activationEvents": [
+    "onLanguage:svon"
+  ],
+  "categories": [
+    "Programming Languages"
+  ],
+  "keywords": [
+    "svon",
+    "svelte",
+    "moonbit",
+    "reactive",
+    "template"
+  ],
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/username/svon.git"
+  },
+  "contributes": {
+    "languages": [
+      {
+        "id": "svon",
+        "aliases": ["Svon", "svon"],
+        "extensions": [".svon"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "svon",
+        "scopeName": "source.svon",
+        "path": "./syntaxes/svon.tmLanguage.json"
+      },
+      {
+        "scopeName": "source.moonbit.embedded",
+        "path": "./syntaxes/moonbit-embedded.tmLanguage.json",
+        "injectTo": ["source.svon"]
+      }
+    ]
+  },
+  "main": "./out/extension.js",
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^2.32.0",
+    "typescript": "^5.9.3"
+  }
+}
