@@ -68,6 +68,14 @@ function _M0DTP38username4svon8compiler8HtmlNode7Element(param0) {
   this._0 = param0;
 }
 _M0DTP38username4svon8compiler8HtmlNode7Element.prototype.$tag = 1;
+function _M0DTP38username4svon8compiler8HtmlNode2If(param0) {
+  this._0 = param0;
+}
+_M0DTP38username4svon8compiler8HtmlNode2If.prototype.$tag = 2;
+function _M0DTP38username4svon8compiler8HtmlNode3For(param0) {
+  this._0 = param0;
+}
+_M0DTP38username4svon8compiler8HtmlNode3For.prototype.$tag = 3;
 function _M0TPB8MutLocalGbE(param0) {
   this.val = param0;
 }
@@ -91,6 +99,20 @@ function _M0DTP38username4svon8compiler9Attribute4Bind(param0, param1) {
   this._1 = param1;
 }
 _M0DTP38username4svon8compiler9Attribute4Bind.prototype.$tag = 2;
+function _M0TP38username4svon8compiler8ForBlock(param0, param1) {
+  this.for_expr = param0;
+  this.body = param1;
+}
+function _M0TP38username4svon8compiler12ElseIfBranch(param0, param1) {
+  this.condition = param0;
+  this.body = param1;
+}
+function _M0TP38username4svon8compiler7IfBlock(param0, param1, param2, param3) {
+  this.condition = param0;
+  this.body = param1;
+  this.else_ifs = param2;
+  this.else_body = param3;
+}
 function _M0TP38username4svon8compiler8Template(param0, param1, param2, param3, param4, param5) {
   this.script = param0;
   this.styles = param1;
@@ -1264,7 +1286,7 @@ function _M0FP38username4svon8compiler11parse__text(html, pos, end, diags) {
   }
   return parts.length === 0 ? undefined : { _0: parts, _1: i.val };
 }
-function _M0FP38username4svon8compiler12parse__nodes(html, pos, end, diags) {
+function _M0FP38username4svon8compiler12parse__nodes(html, pos, end, diags, child_end) {
   const nodes = _M0MPC15array5Array11new_2einnerGRP38username4svon8compiler10DiagnosticE(8);
   const i = new _M0TPB8MutLocalGiE(pos);
   while (true) {
@@ -1314,39 +1336,93 @@ function _M0FP38username4svon8compiler12parse__nodes(html, pos, end, diags) {
           continue;
         }
       } else {
-        let parts;
-        let next;
-        _L: {
-          _L$2: {
-            const _bind = _M0FP38username4svon8compiler11parse__text(html, i.val, end, diags);
-            if (_bind === undefined) {
-              i.val = i.val + 1 | 0;
-            } else {
-              const _Some = _bind;
-              const _x = _Some;
-              const _parts = _x._0;
-              const _next = _x._1;
-              parts = _parts;
-              next = _next;
-              break _L$2;
-            }
-            break _L;
-          }
-          const _bind = 0;
-          const _bind$2 = parts.length;
-          let _tmp = _bind;
-          while (true) {
-            const j = _tmp;
-            if (j < _bind$2) {
-              _M0MPC15array5Array4pushGRP38username4svon8compiler8HtmlNodeE(nodes, new _M0DTP38username4svon8compiler8HtmlNode4Text(_M0MPC15array5Array2atGsE(parts, j)));
-              _tmp = j + 1 | 0;
+        if (_M0IPC16uint166UInt16PB2Eq5equal(ch, 123) && ((i.val + 1 | 0) < end && _M0IPC16uint166UInt16PB2Eq5equal(_M0FP38username4svon8compiler8char__at(html, i.val + 1 | 0), 35))) {
+          if ((i.val + 5 | 0) < end && html.substring(i.val, i.val + 5 | 0) === "{#if ") {
+            let block;
+            let next;
+            _L: {
+              _L$2: {
+                const _bind = _M0FP38username4svon8compiler16parse__if__block(html, i.val, end, diags);
+                if (_bind === undefined) {
+                  i.val = i.val + 1 | 0;
+                } else {
+                  const _Some = _bind;
+                  const _x = _Some;
+                  const _block = _x._0;
+                  const _next = _x._1;
+                  block = _block;
+                  next = _next;
+                  break _L$2;
+                }
+                break _L;
+              }
+              _M0MPC15array5Array4pushGRP38username4svon8compiler8HtmlNodeE(nodes, new _M0DTP38username4svon8compiler8HtmlNode2If(block));
+              i.val = next;
               continue;
+            }
+          } else {
+            if ((i.val + 5 | 0) < end && html.substring(i.val, i.val + 5 | 0) === "{#for") {
+              let block;
+              let next;
+              _L: {
+                _L$2: {
+                  const _bind = _M0FP38username4svon8compiler17parse__for__block(html, i.val, end, diags);
+                  if (_bind === undefined) {
+                    i.val = i.val + 1 | 0;
+                  } else {
+                    const _Some = _bind;
+                    const _x = _Some;
+                    const _block = _x._0;
+                    const _next = _x._1;
+                    block = _block;
+                    next = _next;
+                    break _L$2;
+                  }
+                  break _L;
+                }
+                _M0MPC15array5Array4pushGRP38username4svon8compiler8HtmlNodeE(nodes, new _M0DTP38username4svon8compiler8HtmlNode3For(block));
+                i.val = next;
+                continue;
+              }
             } else {
-              break;
+              i.val = i.val + 1 | 0;
             }
           }
-          i.val = next;
-          continue;
+        } else {
+          let parts;
+          let next;
+          _L: {
+            _L$2: {
+              const _bind = _M0FP38username4svon8compiler11parse__text(html, i.val, end, diags);
+              if (_bind === undefined) {
+                i.val = i.val + 1 | 0;
+              } else {
+                const _Some = _bind;
+                const _x = _Some;
+                const _parts = _x._0;
+                const _next = _x._1;
+                parts = _parts;
+                next = _next;
+                break _L$2;
+              }
+              break _L;
+            }
+            const _bind = 0;
+            const _bind$2 = parts.length;
+            let _tmp = _bind;
+            while (true) {
+              const j = _tmp;
+              if (j < _bind$2) {
+                _M0MPC15array5Array4pushGRP38username4svon8compiler8HtmlNodeE(nodes, new _M0DTP38username4svon8compiler8HtmlNode4Text(_M0MPC15array5Array2atGsE(parts, j)));
+                _tmp = j + 1 | 0;
+                continue;
+              } else {
+                break;
+              }
+            }
+            i.val = next;
+            continue;
+          }
         }
       }
       i.val = i.val + 1 | 0;
@@ -1355,6 +1431,7 @@ function _M0FP38username4svon8compiler12parse__nodes(html, pos, end, diags) {
       break;
     }
   }
+  child_end.val = i.val;
   return nodes;
 }
 function _M0FP38username4svon8compiler14parse__element(html, pos, end, diags) {
@@ -1456,7 +1533,14 @@ function _M0FP38username4svon8compiler14parse__element(html, pos, end, diags) {
               const ev_name = name.substring(2, name.length);
               _M0MPC15array5Array4pushGRP38username4svon8compiler8HtmlNodeE(attrs, new _M0DTP38username4svon8compiler9Attribute5Event(ev_name, val));
             } else {
-              _M0MPC15array5Array4pushGRP38username4svon8compiler8HtmlNodeE(attrs, new _M0DTP38username4svon8compiler9Attribute4Bind(name, val));
+              let bind_name;
+              const _bind = "bind:";
+              if (_M0MPC16string6String11has__prefix(name, new _M0TPC16string10StringView(_bind, 0, _bind.length))) {
+                bind_name = name.substring("bind:".length, name.length);
+              } else {
+                bind_name = name;
+              }
+              _M0MPC15array5Array4pushGRP38username4svon8compiler8HtmlNodeE(attrs, new _M0DTP38username4svon8compiler9Attribute4Bind(bind_name, val));
             }
           }
         }
@@ -1468,9 +1552,10 @@ function _M0FP38username4svon8compiler14parse__element(html, pos, end, diags) {
       break;
     }
   }
-  const children = _M0FP38username4svon8compiler12parse__nodes(html, i.val, end, diags);
+  const child_end = _M0MPC13ref3Ref3RefGiE(i.val);
+  const children = _M0FP38username4svon8compiler12parse__nodes(html, i.val, end, diags, child_end);
   const close_tag = `</${tag}>`;
-  const rest = html.substring(i.val, end);
+  const rest = html.substring(child_end.val, end);
   let close_end;
   let ct;
   _L$2: {
@@ -1487,9 +1572,486 @@ function _M0FP38username4svon8compiler14parse__element(html, pos, end, diags) {
       }
       break _L$2;
     }
-    close_end = (i.val + ct | 0) + close_tag.length | 0;
+    close_end = (child_end.val + ct | 0) + close_tag.length | 0;
   }
   return { _0: new _M0TP38username4svon8compiler11ElementNode(tag, attrs, children), _1: close_end };
+}
+function _M0FP38username4svon8compiler17parse__for__block(html, pos, end, diags) {
+  if ((pos + 5 | 0) >= end) {
+    return undefined;
+  }
+  if (_M0IP016_24default__implPB2Eq10not__equalGsE(html.substring(pos, pos + 5 | 0), "{#for")) {
+    return undefined;
+  }
+  const i = new _M0TPB8MutLocalGiE(pos + 5 | 0);
+  while (true) {
+    let _tmp;
+    if (i.val < end) {
+      const _tmp$2 = i.val;
+      $bound_check(html, _tmp$2);
+      _tmp = _M0IPC16uint166UInt16PB2Eq5equal(html.charCodeAt(_tmp$2), 32);
+    } else {
+      _tmp = false;
+    }
+    if (_tmp) {
+      i.val = i.val + 1 | 0;
+      continue;
+    } else {
+      break;
+    }
+  }
+  const expr_start = i.val;
+  const d = new _M0TPB8MutLocalGiE(1);
+  while (true) {
+    if (i.val < end && d.val > 0) {
+      const _tmp = i.val;
+      $bound_check(html, _tmp);
+      if (_M0IPC16uint166UInt16PB2Eq5equal(html.charCodeAt(_tmp), 123)) {
+        d.val = d.val + 1 | 0;
+      } else {
+        const _tmp$2 = i.val;
+        $bound_check(html, _tmp$2);
+        if (_M0IPC16uint166UInt16PB2Eq5equal(html.charCodeAt(_tmp$2), 125)) {
+          d.val = d.val - 1 | 0;
+        }
+      }
+      if (d.val === 0) {
+        break;
+      }
+      i.val = i.val + 1 | 0;
+      continue;
+    } else {
+      break;
+    }
+  }
+  if (d.val > 0) {
+    _M0FP38username4svon8compiler6record(diags, "unclosed-for", "Unclosed {#for ...} — missing }", pos, i.val);
+    return undefined;
+  }
+  const for_expr = _M0MPC16string10StringView9to__owned(_M0MPC16string6String4trim(html.substring(expr_start, i.val), undefined));
+  i.val = i.val + 1 | 0;
+  const body_start = i.val;
+  const depth = new _M0TPB8MutLocalGiE(1);
+  const scan = new _M0TPB8MutLocalGiE(body_start);
+  while (true) {
+    if (scan.val < end) {
+      const _tmp = scan.val;
+      $bound_check(html, _tmp);
+      if (_M0IPC16uint166UInt16PB2Eq5equal(html.charCodeAt(_tmp), 123)) {
+        let _tmp$2;
+        if ((scan.val + 1 | 0) < end) {
+          const _tmp$3 = scan.val + 1 | 0;
+          $bound_check(html, _tmp$3);
+          _tmp$2 = _M0IPC16uint166UInt16PB2Eq5equal(html.charCodeAt(_tmp$3), 35);
+        } else {
+          _tmp$2 = false;
+        }
+        if (_tmp$2) {
+          depth.val = depth.val + 1 | 0;
+        } else {
+          let _tmp$3;
+          if ((scan.val + 1 | 0) < end) {
+            const _tmp$4 = scan.val + 1 | 0;
+            $bound_check(html, _tmp$4);
+            _tmp$3 = _M0IPC16uint166UInt16PB2Eq5equal(html.charCodeAt(_tmp$4), 47);
+          } else {
+            _tmp$3 = false;
+          }
+          if (_tmp$3) {
+            const j = scan.val + 2 | 0;
+            const tag_end = new _M0TPB8MutLocalGiE(j);
+            while (true) {
+              let _tmp$4;
+              if (tag_end.val < end) {
+                let _tmp$5;
+                const _tmp$6 = tag_end.val;
+                $bound_check(html, _tmp$6);
+                if (_M0IPC16uint166UInt16PB2Eq10not__equal(html.charCodeAt(_tmp$6), 125)) {
+                  let _tmp$7;
+                  const _tmp$8 = tag_end.val;
+                  $bound_check(html, _tmp$8);
+                  if (_M0IPC16uint166UInt16PB2Eq10not__equal(html.charCodeAt(_tmp$8), 32)) {
+                    let _tmp$9;
+                    const _tmp$10 = tag_end.val;
+                    $bound_check(html, _tmp$10);
+                    if (_M0IPC16uint166UInt16PB2Eq10not__equal(html.charCodeAt(_tmp$10), 13)) {
+                      const _tmp$11 = tag_end.val;
+                      $bound_check(html, _tmp$11);
+                      _tmp$9 = _M0IPC16uint166UInt16PB2Eq10not__equal(html.charCodeAt(_tmp$11), 10);
+                    } else {
+                      _tmp$9 = false;
+                    }
+                    _tmp$7 = _tmp$9;
+                  } else {
+                    _tmp$7 = false;
+                  }
+                  _tmp$5 = _tmp$7;
+                } else {
+                  _tmp$5 = false;
+                }
+                _tmp$4 = _tmp$5;
+              } else {
+                _tmp$4 = false;
+              }
+              if (_tmp$4) {
+                tag_end.val = tag_end.val + 1 | 0;
+                continue;
+              } else {
+                break;
+              }
+            }
+            if (html.substring(j, tag_end.val) === "for") {
+              depth.val = depth.val - 1 | 0;
+              if (depth.val === 0) {
+                const body_end = scan.val;
+                i.val = tag_end.val;
+                while (true) {
+                  let _tmp$4;
+                  if (i.val < end) {
+                    const _tmp$5 = i.val;
+                    $bound_check(html, _tmp$5);
+                    _tmp$4 = _M0IPC16uint166UInt16PB2Eq10not__equal(html.charCodeAt(_tmp$5), 125);
+                  } else {
+                    _tmp$4 = false;
+                  }
+                  if (_tmp$4) {
+                    i.val = i.val + 1 | 0;
+                    continue;
+                  } else {
+                    break;
+                  }
+                }
+                if (i.val < end) {
+                  i.val = i.val + 1 | 0;
+                }
+                const body = _M0FP38username4svon8compiler12parse__nodes(html, body_start, body_end, diags, _M0MPC13ref3Ref3RefGiE(0));
+                return { _0: new _M0TP38username4svon8compiler8ForBlock(for_expr, body), _1: i.val };
+              }
+            }
+          }
+        }
+      }
+      scan.val = scan.val + 1 | 0;
+      continue;
+    } else {
+      break;
+    }
+  }
+  _M0FP38username4svon8compiler6record(diags, "unclosed-for", "Unclosed {#for} — missing {/for}", pos, scan.val);
+  return undefined;
+}
+function _M0FP38username4svon8compiler16parse__if__block(html, pos, end, diags) {
+  if ((pos + 5 | 0) >= end) {
+    return undefined;
+  }
+  if (_M0IP016_24default__implPB2Eq10not__equalGsE(html.substring(pos, pos + 5 | 0), "{#if ")) {
+    return undefined;
+  }
+  const i = new _M0TPB8MutLocalGiE(pos + 5 | 0);
+  const cond_start = i.val;
+  const d = new _M0TPB8MutLocalGiE(1);
+  while (true) {
+    if (i.val < end && d.val > 0) {
+      const _tmp = i.val;
+      $bound_check(html, _tmp);
+      if (_M0IPC16uint166UInt16PB2Eq5equal(html.charCodeAt(_tmp), 123)) {
+        d.val = d.val + 1 | 0;
+      } else {
+        const _tmp$2 = i.val;
+        $bound_check(html, _tmp$2);
+        if (_M0IPC16uint166UInt16PB2Eq5equal(html.charCodeAt(_tmp$2), 125)) {
+          d.val = d.val - 1 | 0;
+        }
+      }
+      if (d.val === 0) {
+        break;
+      }
+      i.val = i.val + 1 | 0;
+      continue;
+    } else {
+      break;
+    }
+  }
+  if (d.val > 0) {
+    _M0FP38username4svon8compiler6record(diags, "unclosed-if", `Unclosed {#if ...} — missing } at ${_M0MPC13int3Int18to__string_2einner(pos, 10)}`, pos, i.val);
+    return undefined;
+  }
+  const condition = _M0MPC16string10StringView9to__owned(_M0MPC16string6String4trim(html.substring(cond_start, i.val), undefined));
+  i.val = i.val + 1 | 0;
+  const body_start = i.val;
+  const body_end = new _M0TPB8MutLocalGiE(end);
+  const end_tag_pos = new _M0TPB8MutLocalGiE(end);
+  const elif_conds = _M0MPC15array5Array11new_2einnerGRP38username4svon8compiler10DiagnosticE(4);
+  const elif_starts = _M0MPC15array5Array11new_2einnerGiE(4);
+  const else_start = new _M0TPB8MutLocalGiE(-1);
+  const else_marker = new _M0TPB8MutLocalGiE(-1);
+  const depth = new _M0TPB8MutLocalGiE(1);
+  const scan = new _M0TPB8MutLocalGiE(body_start);
+  const first_else = new _M0TPB8MutLocalGbE(false);
+  while (true) {
+    if (scan.val < end) {
+      const _tmp = scan.val;
+      $bound_check(html, _tmp);
+      if (_M0IPC16uint166UInt16PB2Eq5equal(html.charCodeAt(_tmp), 123)) {
+        let _tmp$2;
+        if ((scan.val + 1 | 0) < end) {
+          const _tmp$3 = scan.val + 1 | 0;
+          $bound_check(html, _tmp$3);
+          _tmp$2 = _M0IPC16uint166UInt16PB2Eq5equal(html.charCodeAt(_tmp$3), 35);
+        } else {
+          _tmp$2 = false;
+        }
+        if (_tmp$2) {
+          depth.val = depth.val + 1 | 0;
+        } else {
+          let _tmp$3;
+          if ((scan.val + 1 | 0) < end) {
+            const _tmp$4 = scan.val + 1 | 0;
+            $bound_check(html, _tmp$4);
+            _tmp$3 = _M0IPC16uint166UInt16PB2Eq5equal(html.charCodeAt(_tmp$4), 47);
+          } else {
+            _tmp$3 = false;
+          }
+          if (_tmp$3) {
+            const j = scan.val + 2 | 0;
+            const tag_end = new _M0TPB8MutLocalGiE(j);
+            while (true) {
+              let _tmp$4;
+              if (tag_end.val < end) {
+                let _tmp$5;
+                const _tmp$6 = tag_end.val;
+                $bound_check(html, _tmp$6);
+                if (_M0IPC16uint166UInt16PB2Eq10not__equal(html.charCodeAt(_tmp$6), 125)) {
+                  let _tmp$7;
+                  const _tmp$8 = tag_end.val;
+                  $bound_check(html, _tmp$8);
+                  if (_M0IPC16uint166UInt16PB2Eq10not__equal(html.charCodeAt(_tmp$8), 32)) {
+                    let _tmp$9;
+                    const _tmp$10 = tag_end.val;
+                    $bound_check(html, _tmp$10);
+                    if (_M0IPC16uint166UInt16PB2Eq10not__equal(html.charCodeAt(_tmp$10), 13)) {
+                      const _tmp$11 = tag_end.val;
+                      $bound_check(html, _tmp$11);
+                      _tmp$9 = _M0IPC16uint166UInt16PB2Eq10not__equal(html.charCodeAt(_tmp$11), 10);
+                    } else {
+                      _tmp$9 = false;
+                    }
+                    _tmp$7 = _tmp$9;
+                  } else {
+                    _tmp$7 = false;
+                  }
+                  _tmp$5 = _tmp$7;
+                } else {
+                  _tmp$5 = false;
+                }
+                _tmp$4 = _tmp$5;
+              } else {
+                _tmp$4 = false;
+              }
+              if (_tmp$4) {
+                tag_end.val = tag_end.val + 1 | 0;
+                continue;
+              } else {
+                break;
+              }
+            }
+            if (html.substring(j, tag_end.val) === "if") {
+              depth.val = depth.val - 1 | 0;
+              if (depth.val === 0) {
+                if (!first_else.val) {
+                  body_end.val = scan.val;
+                }
+                end_tag_pos.val = scan.val;
+                i.val = tag_end.val;
+                while (true) {
+                  let _tmp$4;
+                  if (i.val < end) {
+                    const _tmp$5 = i.val;
+                    $bound_check(html, _tmp$5);
+                    _tmp$4 = _M0IPC16uint166UInt16PB2Eq10not__equal(html.charCodeAt(_tmp$5), 125);
+                  } else {
+                    _tmp$4 = false;
+                  }
+                  if (_tmp$4) {
+                    i.val = i.val + 1 | 0;
+                    continue;
+                  } else {
+                    break;
+                  }
+                }
+                if (i.val < end) {
+                  i.val = i.val + 1 | 0;
+                }
+                break;
+              }
+            }
+          } else {
+            let _tmp$4;
+            if ((scan.val + 1 | 0) < end) {
+              const _tmp$5 = scan.val + 1 | 0;
+              $bound_check(html, _tmp$5);
+              _tmp$4 = _M0IPC16uint166UInt16PB2Eq5equal(html.charCodeAt(_tmp$5), 58);
+            } else {
+              _tmp$4 = false;
+            }
+            if (_tmp$4) {
+              if (depth.val === 1) {
+                const j = scan.val + 2 | 0;
+                const tag_end = new _M0TPB8MutLocalGiE(j);
+                while (true) {
+                  let _tmp$5;
+                  if (tag_end.val < end) {
+                    let _tmp$6;
+                    const _tmp$7 = tag_end.val;
+                    $bound_check(html, _tmp$7);
+                    if (_M0IPC16uint166UInt16PB2Eq10not__equal(html.charCodeAt(_tmp$7), 125)) {
+                      let _tmp$8;
+                      const _tmp$9 = tag_end.val;
+                      $bound_check(html, _tmp$9);
+                      if (_M0IPC16uint166UInt16PB2Eq10not__equal(html.charCodeAt(_tmp$9), 32)) {
+                        let _tmp$10;
+                        const _tmp$11 = tag_end.val;
+                        $bound_check(html, _tmp$11);
+                        if (_M0IPC16uint166UInt16PB2Eq10not__equal(html.charCodeAt(_tmp$11), 13)) {
+                          const _tmp$12 = tag_end.val;
+                          $bound_check(html, _tmp$12);
+                          _tmp$10 = _M0IPC16uint166UInt16PB2Eq10not__equal(html.charCodeAt(_tmp$12), 10);
+                        } else {
+                          _tmp$10 = false;
+                        }
+                        _tmp$8 = _tmp$10;
+                      } else {
+                        _tmp$8 = false;
+                      }
+                      _tmp$6 = _tmp$8;
+                    } else {
+                      _tmp$6 = false;
+                    }
+                    _tmp$5 = _tmp$6;
+                  } else {
+                    _tmp$5 = false;
+                  }
+                  if (_tmp$5) {
+                    tag_end.val = tag_end.val + 1 | 0;
+                    continue;
+                  } else {
+                    break;
+                  }
+                }
+                if (html.substring(j, tag_end.val) === "else") {
+                  if (!first_else.val) {
+                    body_end.val = scan.val;
+                    first_else.val = true;
+                  }
+                  const marker_end = new _M0TPB8MutLocalGiE(tag_end.val);
+                  let _tmp$5;
+                  if (marker_end.val < end) {
+                    const _tmp$6 = marker_end.val;
+                    $bound_check(html, _tmp$6);
+                    _tmp$5 = _M0IPC16uint166UInt16PB2Eq5equal(html.charCodeAt(_tmp$6), 32);
+                  } else {
+                    _tmp$5 = false;
+                  }
+                  if (_tmp$5) {
+                    marker_end.val = marker_end.val + 1 | 0;
+                    if ((marker_end.val + 1 | 0) < end && html.substring(marker_end.val, marker_end.val + 2 | 0) === "if") {
+                      marker_end.val = marker_end.val + 2 | 0;
+                      let _tmp$6;
+                      if (marker_end.val < end) {
+                        const _tmp$7 = marker_end.val;
+                        $bound_check(html, _tmp$7);
+                        _tmp$6 = _M0IPC16uint166UInt16PB2Eq5equal(html.charCodeAt(_tmp$7), 32);
+                      } else {
+                        _tmp$6 = false;
+                      }
+                      if (_tmp$6) {
+                        marker_end.val = marker_end.val + 1 | 0;
+                      }
+                      const ec_start = marker_end.val;
+                      const ed = new _M0TPB8MutLocalGiE(1);
+                      const k = new _M0TPB8MutLocalGiE(ec_start);
+                      while (true) {
+                        if (k.val < end && ed.val > 0) {
+                          const _tmp$7 = k.val;
+                          $bound_check(html, _tmp$7);
+                          if (_M0IPC16uint166UInt16PB2Eq5equal(html.charCodeAt(_tmp$7), 123)) {
+                            ed.val = ed.val + 1 | 0;
+                          } else {
+                            const _tmp$8 = k.val;
+                            $bound_check(html, _tmp$8);
+                            if (_M0IPC16uint166UInt16PB2Eq5equal(html.charCodeAt(_tmp$8), 125)) {
+                              ed.val = ed.val - 1 | 0;
+                            }
+                          }
+                          if (ed.val === 0) {
+                            break;
+                          }
+                          k.val = k.val + 1 | 0;
+                          continue;
+                        } else {
+                          break;
+                        }
+                      }
+                      if (ed.val === 0) {
+                        _M0MPC15array5Array4pushGRP38username4svon8compiler8HtmlNodeE(elif_conds, _M0MPC16string10StringView9to__owned(_M0MPC16string6String4trim(html.substring(ec_start, k.val), undefined)));
+                        _M0MPC15array5Array4pushGiE(elif_starts, k.val + 1 | 0);
+                      }
+                    }
+                  } else {
+                    else_marker.val = scan.val;
+                    else_start.val = tag_end.val;
+                    const k = new _M0TPB8MutLocalGiE(else_start.val);
+                    while (true) {
+                      let _tmp$6;
+                      if (k.val < end) {
+                        const _tmp$7 = k.val;
+                        $bound_check(html, _tmp$7);
+                        _tmp$6 = _M0IPC16uint166UInt16PB2Eq10not__equal(html.charCodeAt(_tmp$7), 125);
+                      } else {
+                        _tmp$6 = false;
+                      }
+                      if (_tmp$6) {
+                        k.val = k.val + 1 | 0;
+                        continue;
+                      } else {
+                        break;
+                      }
+                    }
+                    else_start.val = k.val + 1 | 0;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      scan.val = scan.val + 1 | 0;
+      continue;
+    } else {
+      break;
+    }
+  }
+  const body = _M0FP38username4svon8compiler12parse__nodes(html, body_start, body_end.val, diags, _M0MPC13ref3Ref3RefGiE(0));
+  const range = elif_conds.length;
+  const else_ifs = _M0MPC15array5Array11new_2einnerGRP38username4svon8compiler10DiagnosticE(range);
+  const _bind = 0;
+  let _tmp = _bind;
+  while (true) {
+    const ei = _tmp;
+    if (ei < range) {
+      const ecs = _M0MPC15array5Array2atGiE(elif_starts, ei);
+      const ece = (ei + 1 | 0) < range ? _M0MPC15array5Array2atGiE(elif_starts, ei + 1 | 0) : else_marker.val >= 0 ? else_marker.val : end_tag_pos.val;
+      const ef_body = _M0FP38username4svon8compiler12parse__nodes(html, ecs, ece, diags, _M0MPC13ref3Ref3RefGiE(0));
+      const ef = new _M0TP38username4svon8compiler12ElseIfBranch(_M0MPC15array5Array2atGsE(elif_conds, ei), ef_body);
+      _M0MPC15array5Array4pushGRP38username4svon8compiler8HtmlNodeE(else_ifs, ef);
+      _tmp = ei + 1 | 0;
+      continue;
+    } else {
+      break;
+    }
+  }
+  const else_body = else_start.val >= 0 ? _M0FP38username4svon8compiler12parse__nodes(html, else_start.val, end_tag_pos.val, diags, _M0MPC13ref3Ref3RefGiE(0)) : _M0MPC15array5Array11new_2einnerGRP38username4svon8compiler10DiagnosticE(0);
+  return { _0: new _M0TP38username4svon8compiler7IfBlock(condition, body, else_ifs, else_body), _1: i.val };
 }
 function _M0FP38username4svon8compiler20remove__style__block(source) {
   const start_tag = "<style>";
@@ -1530,7 +2092,7 @@ function _M0FP38username4svon8compiler5parse(source) {
   const html = _M0FP38username4svon8compiler13extract__html(source);
   const html_no_style = _M0FP38username4svon8compiler20remove__style__block(html);
   const diags = _M0MPC15array5Array11new_2einnerGRP38username4svon8compiler10DiagnosticE(4);
-  const nodes = _M0FP38username4svon8compiler12parse__nodes(html_no_style, 0, html_no_style.length, diags);
+  const nodes = _M0FP38username4svon8compiler12parse__nodes(html_no_style, 0, html_no_style.length, diags, _M0MPC13ref3Ref3RefGiE(0));
   let script_start_line;
   let pos;
   _L: {
@@ -1719,22 +2281,33 @@ function _M0FP38username4svon8compiler17element__to__html(el) {
           _L$3: {
             _L$4: {
               const _bind$5 = _M0MPC15array5Array2atGsE(el.children, i);
-              if (_bind$5.$tag === 0) {
-                const _Text = _bind$5;
-                const _x = _Text._0;
-                if (_x.$tag === 0) {
-                  const _Static = _x;
-                  const _s = _Static._0;
-                  s = _s;
-                  break _L$4;
-                } else {
+              switch (_bind$5.$tag) {
+                case 0: {
+                  const _Text = _bind$5;
+                  const _x = _Text._0;
+                  if (_x.$tag === 0) {
+                    const _Static = _x;
+                    const _s = _Static._0;
+                    s = _s;
+                    break _L$4;
+                  } else {
+                    _M0IPB13StringBuilderPB6Logger13write__string(b, " ");
+                  }
+                  break;
+                }
+                case 1: {
+                  const _Element = _bind$5;
+                  const _child = _Element._0;
+                  child = _child;
+                  break _L$2;
+                }
+                case 2: {
+                  _M0IPB13StringBuilderPB6Logger13write__string(b, " ");
+                  break;
+                }
+                default: {
                   _M0IPB13StringBuilderPB6Logger13write__string(b, " ");
                 }
-              } else {
-                const _Element = _bind$5;
-                const _child = _Element._0;
-                child = _child;
-                break _L$2;
               }
               break _L$3;
             }
@@ -1786,19 +2359,28 @@ function _M0FP38username4svon8compiler19is__static__element(el) {
         let child;
         _L$2: {
           const _bind$5 = _M0MPC15array5Array2atGsE(el.children, i);
-          if (_bind$5.$tag === 0) {
-            const _Text = _bind$5;
-            const _x = _Text._0;
-            if (_x.$tag === 1) {
-              return false;
-            } else {
-              break _L;
+          switch (_bind$5.$tag) {
+            case 0: {
+              const _Text = _bind$5;
+              const _x = _Text._0;
+              if (_x.$tag === 1) {
+                return false;
+              } else {
+                break _L;
+              }
             }
-          } else {
-            const _Element = _bind$5;
-            const _child = _Element._0;
-            child = _child;
-            break _L$2;
+            case 1: {
+              const _Element = _bind$5;
+              const _child = _Element._0;
+              child = _child;
+              break _L$2;
+            }
+            case 2: {
+              return false;
+            }
+            default: {
+              return false;
+            }
           }
         }
         if (!_M0FP38username4svon8compiler19is__static__element(child)) {
@@ -1880,6 +2462,85 @@ function _M0FP38username4svon8compiler11escape__mbt(s) {
   const _tmp$5 = new _M0TPC16string10StringView(_bind$5, 0, _bind$5.length);
   const _bind$6 = "\\n";
   return _M0MPC16string6String12replace__all(_tmp$4, _tmp$5, new _M0TPC16string10StringView(_bind$6, 0, _bind$6.length));
+}
+function _M0FP38username4svon8compiler11bind__event(prop) {
+  return prop === "value" ? "input" : prop === "checked" || prop === "indeterminate" ? "change" : prop === "open" ? "toggle" : "";
+}
+function _M0FP38username4svon8compiler12bind__getter(el, prop) {
+  if (prop === "value") {
+    return "node_get_value";
+  } else {
+    if (prop === "checked") {
+      const _bind = el.attributes;
+      const _bind$2 = _bind.length;
+      let _tmp = 0;
+      while (true) {
+        const _ = _tmp;
+        if (_ < _bind$2) {
+          const attr = _bind[_];
+          if (attr.$tag === 0) {
+            const _Static = attr;
+            const _x = _Static._0;
+            if (_x === "type") {
+              const _x$2 = _Static._1;
+              if (_x$2 === "radio") {
+                return "node_get_value";
+              }
+            }
+          }
+          _tmp = _ + 1 | 0;
+          continue;
+        } else {
+          break;
+        }
+      }
+      return "node_get_checked";
+    } else {
+      return prop === "open" ? "node_get_open" : "";
+    }
+  }
+}
+function _M0FP38username4svon8compiler16bind__state__var(expr) {
+  let pos;
+  _L: {
+    const _bind = ".get()";
+    const _bind$2 = _M0MPC16string6String4find(expr, new _M0TPC16string10StringView(_bind, 0, _bind.length));
+    if (_bind$2 === undefined) {
+      return expr;
+    } else {
+      const _Some = _bind$2;
+      const _pos = _Some;
+      pos = _pos;
+      break _L;
+    }
+  }
+  return expr.substring(0, pos);
+}
+function _M0FP38username4svon8compiler15handler__prefix(h) {
+  const _bind = "dom_debug(";
+  const _tmp = new _M0TPC16string10StringView(_bind, 0, _bind.length);
+  const _bind$2 = "@svon.dom_debug(";
+  const _tmp$2 = _M0MPC16string6String12replace__all(h, _tmp, new _M0TPC16string10StringView(_bind$2, 0, _bind$2.length));
+  const _bind$3 = "console.log(";
+  const _tmp$3 = new _M0TPC16string10StringView(_bind$3, 0, _bind$3.length);
+  const _bind$4 = "@svon.console_log(";
+  const _tmp$4 = _M0MPC16string6String12replace__all(_tmp$2, _tmp$3, new _M0TPC16string10StringView(_bind$4, 0, _bind$4.length));
+  const _bind$5 = "console.warn(";
+  const _tmp$5 = new _M0TPC16string10StringView(_bind$5, 0, _bind$5.length);
+  const _bind$6 = "@svon.console_warn(";
+  const _tmp$6 = _M0MPC16string6String12replace__all(_tmp$4, _tmp$5, new _M0TPC16string10StringView(_bind$6, 0, _bind$6.length));
+  const _bind$7 = "console.error(";
+  const _tmp$7 = new _M0TPC16string10StringView(_bind$7, 0, _bind$7.length);
+  const _bind$8 = "@svon.console_error(";
+  const _tmp$8 = _M0MPC16string6String12replace__all(_tmp$6, _tmp$7, new _M0TPC16string10StringView(_bind$8, 0, _bind$8.length));
+  const _bind$9 = "console.info(";
+  const _tmp$9 = new _M0TPC16string10StringView(_bind$9, 0, _bind$9.length);
+  const _bind$10 = "@svon.console_info(";
+  const _tmp$10 = _M0MPC16string6String12replace__all(_tmp$8, _tmp$9, new _M0TPC16string10StringView(_bind$10, 0, _bind$10.length));
+  const _bind$11 = "console.debug(";
+  const _tmp$11 = new _M0TPC16string10StringView(_bind$11, 0, _bind$11.length);
+  const _bind$12 = "@svon.console_debug(";
+  return _M0MPC16string6String12replace__all(_tmp$10, _tmp$11, new _M0TPC16string10StringView(_bind$12, 0, _bind$12.length));
 }
 function _M0FP38username4svon8compiler14generate__text(chunk, parent, b, el_id, standalone) {
   const id = el_id.val;
@@ -1963,27 +2624,56 @@ function _M0FP38username4svon8compiler15generate__nodes(nodes, parent, b, el_id,
     const i = _tmp;
     if (i < _bind$2) {
       const node = _M0MPC15array5Array2atGsE(nodes, i);
-      let el;
+      let block;
       _L: {
         _L$2: {
-          let chunk;
+          let block$2;
           _L$3: {
-            if (node.$tag === 0) {
-              const _Text = node;
-              const _chunk = _Text._0;
-              chunk = _chunk;
+            _L$4: {
+              let el;
+              _L$5: {
+                _L$6: {
+                  let chunk;
+                  _L$7: {
+                    switch (node.$tag) {
+                      case 0: {
+                        const _Text = node;
+                        const _chunk = _Text._0;
+                        chunk = _chunk;
+                        break _L$7;
+                      }
+                      case 1: {
+                        const _Element = node;
+                        const _el = _Element._0;
+                        el = _el;
+                        break _L$6;
+                      }
+                      case 2: {
+                        const _If = node;
+                        const _block = _If._0;
+                        block$2 = _block;
+                        break _L$4;
+                      }
+                      default: {
+                        const _For = node;
+                        const _block$2 = _For._0;
+                        block = _block$2;
+                        break _L$2;
+                      }
+                    }
+                  }
+                  _M0FP38username4svon8compiler14generate__text(chunk, parent, b, el_id, standalone);
+                  break _L$5;
+                }
+                _M0FP38username4svon8compiler17generate__element(el, parent, b, el_id, templates, standalone);
+              }
               break _L$3;
-            } else {
-              const _Element = node;
-              const _el = _Element._0;
-              el = _el;
-              break _L$2;
             }
+            _M0FP38username4svon8compiler12generate__if(block$2, parent, b, el_id, templates, standalone);
           }
-          _M0FP38username4svon8compiler14generate__text(chunk, parent, b, el_id, standalone);
           break _L;
         }
-        _M0FP38username4svon8compiler17generate__element(el, parent, b, el_id, templates, standalone);
+        _M0FP38username4svon8compiler13generate__for(block, parent, b, el_id, templates, standalone);
       }
       _tmp = i + 1 | 0;
       continue;
@@ -2113,29 +2803,109 @@ function _M0FP38username4svon8compiler17generate__element(el, parent, b, el_id, 
             _M0IPB13StringBuilderPB6Logger13write__string(_writer_17, ", \"");
             _M0MPB13StringBuilder13write__objectGsE(_writer_17, event);
             _M0IPB13StringBuilderPB6Logger13write__string(_writer_17, "\", ");
-            _M0MPB13StringBuilder13write__objectGsE(_writer_17, handler);
+            _M0MPB13StringBuilder13write__objectGsE(_writer_17, _M0FP38username4svon8compiler15handler__prefix(handler));
             _M0IPB13StringBuilderPB6Logger13write__string(_writer_17, ")\n");
           }
           break _L;
         }
-        const _writer_18 = b;
-        _M0IPB13StringBuilderPB6Logger13write__string(_writer_18, "        let _ = ");
-        _M0MPB13StringBuilder13write__objectGsE(_writer_18, prefix);
-        _M0IPB13StringBuilderPB6Logger13write__string(_writer_18, "effect(fn() {\n");
-        const _writer_19 = b;
-        _M0IPB13StringBuilderPB6Logger13write__string(_writer_19, "    ");
-        _M0MPB13StringBuilder13write__objectGsE(_writer_19, prefix);
-        _M0IPB13StringBuilderPB6Logger13write__string(_writer_19, "node_set_attribute(");
-        _M0MPB13StringBuilder13write__objectGsE(_writer_19, el_var);
-        _M0IPB13StringBuilderPB6Logger13write__string(_writer_19, ", \"");
-        _M0MPB13StringBuilder13write__objectGsE(_writer_19, attr_name);
-        _M0IPB13StringBuilderPB6Logger13write__string(_writer_19, "\", (");
-        _M0MPB13StringBuilder13write__objectGsE(_writer_19, expr);
-        _M0IPB13StringBuilderPB6Logger13write__string(_writer_19, ").to_string())\n");
-        const _writer_20 = b;
-        _M0IPB13StringBuilderPB6Logger13write__string(_writer_20, "    Option::None\n");
-        const _writer_21 = b;
-        _M0IPB13StringBuilderPB6Logger13write__string(_writer_21, "  })\n");
+        if (attr_name === "this") {
+          const st_var = _M0FP38username4svon8compiler16bind__state__var(expr);
+          if (_M0IP016_24default__implPB2Eq10not__equalGsE(st_var, expr) && st_var.length > 0) {
+            const _writer_18 = b;
+            _M0IPB13StringBuilderPB6Logger13write__string(_writer_18, "  ");
+            _M0MPB13StringBuilder13write__objectGsE(_writer_18, st_var);
+            _M0IPB13StringBuilderPB6Logger13write__string(_writer_18, ".set(Option::Some(");
+            _M0MPB13StringBuilder13write__objectGsE(_writer_18, el_var);
+            _M0IPB13StringBuilderPB6Logger13write__string(_writer_18, "))\n");
+          } else {
+            const _writer_19 = b;
+            _M0IPB13StringBuilderPB6Logger13write__string(_writer_19, "  ");
+            _M0MPB13StringBuilder13write__objectGsE(_writer_19, expr);
+            _M0IPB13StringBuilderPB6Logger13write__string(_writer_19, " = Option::Some(");
+            _M0MPB13StringBuilder13write__objectGsE(_writer_19, el_var);
+            _M0IPB13StringBuilderPB6Logger13write__string(_writer_19, ")\n");
+          }
+        } else {
+          if (attr_name === "value") {
+            const _writer_20 = b;
+            _M0IPB13StringBuilderPB6Logger13write__string(_writer_20, "        let _ = ");
+            _M0MPB13StringBuilder13write__objectGsE(_writer_20, prefix);
+            _M0IPB13StringBuilderPB6Logger13write__string(_writer_20, "effect(fn() {\n");
+            const _writer_21 = b;
+            _M0IPB13StringBuilderPB6Logger13write__string(_writer_21, "    ");
+            _M0MPB13StringBuilder13write__objectGsE(_writer_21, prefix);
+            _M0IPB13StringBuilderPB6Logger13write__string(_writer_21, "node_set_value(");
+            _M0MPB13StringBuilder13write__objectGsE(_writer_21, el_var);
+            _M0IPB13StringBuilderPB6Logger13write__string(_writer_21, ", (");
+            _M0MPB13StringBuilder13write__objectGsE(_writer_21, expr);
+            _M0IPB13StringBuilderPB6Logger13write__string(_writer_21, ").to_string())\n");
+            const _writer_22 = b;
+            _M0IPB13StringBuilderPB6Logger13write__string(_writer_22, "    Option::None\n");
+            const _writer_23 = b;
+            _M0IPB13StringBuilderPB6Logger13write__string(_writer_23, "  })\n");
+          } else {
+            if (attr_name === "open") {
+              const _writer_24 = b;
+              _M0IPB13StringBuilderPB6Logger13write__string(_writer_24, "        let _ = ");
+              _M0MPB13StringBuilder13write__objectGsE(_writer_24, prefix);
+              _M0IPB13StringBuilderPB6Logger13write__string(_writer_24, "effect(fn() {\n");
+              const _writer_25 = b;
+              _M0IPB13StringBuilderPB6Logger13write__string(_writer_25, "    ");
+              _M0MPB13StringBuilder13write__objectGsE(_writer_25, prefix);
+              _M0IPB13StringBuilderPB6Logger13write__string(_writer_25, "node_set_open(");
+              _M0MPB13StringBuilder13write__objectGsE(_writer_25, el_var);
+              _M0IPB13StringBuilderPB6Logger13write__string(_writer_25, ", (");
+              _M0MPB13StringBuilder13write__objectGsE(_writer_25, expr);
+              _M0IPB13StringBuilderPB6Logger13write__string(_writer_25, "))\n");
+              const _writer_26 = b;
+              _M0IPB13StringBuilderPB6Logger13write__string(_writer_26, "    Option::None\n");
+              const _writer_27 = b;
+              _M0IPB13StringBuilderPB6Logger13write__string(_writer_27, "  })\n");
+            } else {
+              const _writer_28 = b;
+              _M0IPB13StringBuilderPB6Logger13write__string(_writer_28, "        let _ = ");
+              _M0MPB13StringBuilder13write__objectGsE(_writer_28, prefix);
+              _M0IPB13StringBuilderPB6Logger13write__string(_writer_28, "effect(fn() {\n");
+              const _writer_29 = b;
+              _M0IPB13StringBuilderPB6Logger13write__string(_writer_29, "    ");
+              _M0MPB13StringBuilder13write__objectGsE(_writer_29, prefix);
+              _M0IPB13StringBuilderPB6Logger13write__string(_writer_29, "node_set_attribute(");
+              _M0MPB13StringBuilder13write__objectGsE(_writer_29, el_var);
+              _M0IPB13StringBuilderPB6Logger13write__string(_writer_29, ", \"");
+              _M0MPB13StringBuilder13write__objectGsE(_writer_29, attr_name);
+              _M0IPB13StringBuilderPB6Logger13write__string(_writer_29, "\", (");
+              _M0MPB13StringBuilder13write__objectGsE(_writer_29, expr);
+              _M0IPB13StringBuilderPB6Logger13write__string(_writer_29, ").to_string())\n");
+              const _writer_30 = b;
+              _M0IPB13StringBuilderPB6Logger13write__string(_writer_30, "    Option::None\n");
+              const _writer_31 = b;
+              _M0IPB13StringBuilderPB6Logger13write__string(_writer_31, "  })\n");
+            }
+          }
+        }
+        const st_var = _M0FP38username4svon8compiler16bind__state__var(expr);
+        const event = _M0FP38username4svon8compiler11bind__event(attr_name);
+        const getter = _M0FP38username4svon8compiler12bind__getter(el, attr_name);
+        if (st_var.length > 0 && (event.length > 0 && getter.length > 0)) {
+          const _writer_32 = b;
+          _M0IPB13StringBuilderPB6Logger13write__string(_writer_32, "  ");
+          _M0MPB13StringBuilder13write__objectGsE(_writer_32, prefix);
+          _M0IPB13StringBuilderPB6Logger13write__string(_writer_32, "node_add_event_listener(");
+          _M0MPB13StringBuilder13write__objectGsE(_writer_32, el_var);
+          _M0IPB13StringBuilderPB6Logger13write__string(_writer_32, ", \"");
+          _M0MPB13StringBuilder13write__objectGsE(_writer_32, event);
+          _M0IPB13StringBuilderPB6Logger13write__string(_writer_32, "\", fn() {\n");
+          const _writer_33 = b;
+          _M0IPB13StringBuilderPB6Logger13write__string(_writer_33, "    ");
+          _M0MPB13StringBuilder13write__objectGsE(_writer_33, st_var);
+          _M0IPB13StringBuilderPB6Logger13write__string(_writer_33, ".set(");
+          _M0MPB13StringBuilder13write__objectGsE(_writer_33, prefix);
+          _M0MPB13StringBuilder13write__objectGsE(_writer_33, getter);
+          _M0IPB13StringBuilderPB6Logger13write__string(_writer_33, "(");
+          _M0MPB13StringBuilder13write__objectGsE(_writer_33, el_var);
+          _M0IPB13StringBuilderPB6Logger13write__string(_writer_33, "))\n");
+          _M0IPB13StringBuilderPB6Logger13write__string(b, "  })\n");
+        }
       }
       _tmp = i + 1 | 0;
       continue;
@@ -2144,14 +2914,296 @@ function _M0FP38username4svon8compiler17generate__element(el, parent, b, el_id, 
     }
   }
   _M0FP38username4svon8compiler15generate__nodes(el.children, el_var, b, el_id, templates, standalone);
-  const _writer_22 = b;
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_22, "  ");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_22, prefix);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_22, "node_append_child(");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_22, parent);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_22, ", ");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_22, el_var);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_22, ")\n");
+  const _writer_34 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_34, "  ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_34, prefix);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_34, "node_append_child(");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_34, parent);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_34, ", ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_34, el_var);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_34, ")\n");
+}
+function _M0FP38username4svon8compiler13generate__for(block, parent, b, el_id, templates, standalone) {
+  const prefix = standalone ? "" : "@svon.";
+  const id = _M0MPC13int3Int18to__string_2einner(el_id.val, 10);
+  el_id.val = el_id.val + 1 | 0;
+  const anchor = `_svon_a${id}`;
+  const containers = `_svon_c${id}`;
+  const _writer_58 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_58, "  let ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_58, anchor);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_58, " = ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_58, prefix);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_58, "document_create_comment(\"#for\")\n");
+  const _writer_59 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_59, "  ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_59, prefix);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_59, "node_append_child(");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_59, parent);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_59, ", ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_59, anchor);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_59, ")\n");
+  const _writer_60 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_60, "  let ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_60, containers);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_60, " = Ref(Array::new())\n");
+  const _writer_61 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_61, "        let _ = ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_61, prefix);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_61, "effect(fn() {\n");
+  const _writer_62 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_62, "    for c in ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_62, containers);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_62, ".val {\n");
+  const _writer_63 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_63, "      ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_63, prefix);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_63, "node_remove_child(");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_63, parent);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_63, ", c)\n");
+  const _writer_64 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_64, "    }\n");
+  const _writer_65 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_65, "    ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_65, containers);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_65, ".val = Array::new()\n");
+  const _writer_66 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_66, "    for ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_66, block.for_expr);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_66, " {\n");
+  const _writer_67 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_67, "      let _svon_ct = ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_67, prefix);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_67, "document_create_container()\n");
+  _M0FP38username4svon8compiler15generate__nodes(block.body, "_svon_ct", b, el_id, templates, standalone);
+  const _writer_68 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_68, "      ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_68, prefix);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_68, "node_insert_before(");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_68, parent);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_68, ", _svon_ct, ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_68, anchor);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_68, ")\n");
+  const _writer_69 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_69, "      ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_69, containers);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_69, ".val.push(_svon_ct)\n");
+  _M0IPB13StringBuilderPB6Logger13write__string(b, "    }\n");
+  _M0IPB13StringBuilderPB6Logger13write__string(b, "    Option::None\n");
+  _M0IPB13StringBuilderPB6Logger13write__string(b, "  })\n");
+}
+function _M0FP38username4svon8compiler12generate__if(block, parent, b, el_id, templates, standalone) {
+  const prefix = standalone ? "" : "@svon.";
+  const id = _M0MPC13int3Int18to__string_2einner(el_id.val, 10);
+  el_id.val = el_id.val + 1 | 0;
+  const anchor = `_svon_a${id}`;
+  const self_var = `_svon_s${id}`;
+  const branch_var = `_svon_b${id}`;
+  const num_branches = (1 + block.else_ifs.length | 0) + 1 | 0;
+  const _writer_39 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_39, "  let ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_39, anchor);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_39, " = ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_39, prefix);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_39, "document_create_comment(\"#if\")\n");
+  const _writer_40 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_40, "  ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_40, prefix);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_40, "node_append_child(");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_40, parent);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_40, ", ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_40, anchor);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_40, ")\n");
+  const _bind = 0;
+  let _tmp = _bind;
+  while (true) {
+    const j = _tmp;
+    if (j < num_branches) {
+      const frag = `${self_var}_${_M0MPC13int3Int18to__string_2einner(j, 10)}`;
+      const _writer_41 = b;
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_41, "  let ");
+      _M0MPB13StringBuilder13write__objectGsE(_writer_41, frag);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_41, " = ");
+      _M0MPB13StringBuilder13write__objectGsE(_writer_41, prefix);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_41, "document_create_container()\n");
+      if (j === 0) {
+        _M0FP38username4svon8compiler15generate__nodes(block.body, frag, b, el_id, templates, standalone);
+      } else {
+        if (j <= block.else_ifs.length) {
+          _M0FP38username4svon8compiler15generate__nodes(_M0MPC15array5Array2atGsE(block.else_ifs, j - 1 | 0).body, frag, b, el_id, templates, standalone);
+        } else {
+          _M0FP38username4svon8compiler15generate__nodes(block.else_body, frag, b, el_id, templates, standalone);
+        }
+      }
+      _tmp = j + 1 | 0;
+      continue;
+    } else {
+      break;
+    }
+  }
+  const _writer_42 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_42, "  let ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_42, branch_var);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_42, " = Ref(0)\n");
+  _M0IPB13StringBuilderPB6Logger13write__string(b, "  ");
+  const _bind$2 = 0;
+  let _tmp$2 = _bind$2;
+  while (true) {
+    const j = _tmp$2;
+    if (j < num_branches) {
+      const frag = `${self_var}_${_M0MPC13int3Int18to__string_2einner(j, 10)}`;
+      const cond = j === 0 ? block.condition : j <= block.else_ifs.length ? _M0MPC15array5Array2atGsE(block.else_ifs, j - 1 | 0).condition : "true";
+      if (j === 0) {
+        _M0IPB13StringBuilderPB6Logger13write__string(b, "if ");
+      } else {
+        _M0IPB13StringBuilderPB6Logger13write__string(b, " else if ");
+      }
+      const _writer_43 = b;
+      _M0MPB13StringBuilder13write__objectGsE(_writer_43, cond);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_43, " {\n");
+      const _writer_44 = b;
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_44, "    ");
+      _M0MPB13StringBuilder13write__objectGsE(_writer_44, prefix);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_44, "node_insert_before(");
+      _M0MPB13StringBuilder13write__objectGsE(_writer_44, parent);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_44, ", ");
+      _M0MPB13StringBuilder13write__objectGsE(_writer_44, frag);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_44, ", ");
+      _M0MPB13StringBuilder13write__objectGsE(_writer_44, anchor);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_44, ")\n");
+      const _writer_45 = b;
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_45, "    ");
+      _M0MPB13StringBuilder13write__objectGsE(_writer_45, branch_var);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_45, ".val = ");
+      _M0MPB13StringBuilder13write__objectGiE(_writer_45, j);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_45, "\n");
+      _M0IPB13StringBuilderPB6Logger13write__string(b, "  }");
+      _tmp$2 = j + 1 | 0;
+      continue;
+    } else {
+      break;
+    }
+  }
+  _M0IPB13StringBuilderPB6Logger13write__string(b, "\n");
+  const _writer_46 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_46, "        let _ = ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_46, prefix);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_46, "effect(fn() {\n");
+  _M0IPB13StringBuilderPB6Logger13write__string(b, "    let _svon_new = ");
+  const _bind$3 = 0;
+  let _tmp$3 = _bind$3;
+  while (true) {
+    const j = _tmp$3;
+    if (j < num_branches) {
+      const cond = j === 0 ? block.condition : j <= block.else_ifs.length ? _M0MPC15array5Array2atGsE(block.else_ifs, j - 1 | 0).condition : "true";
+      if (j === 0) {
+        const _writer_47 = b;
+        _M0IPB13StringBuilderPB6Logger13write__string(_writer_47, "if ");
+        _M0MPB13StringBuilder13write__objectGsE(_writer_47, cond);
+        _M0IPB13StringBuilderPB6Logger13write__string(_writer_47, " { ");
+        _M0MPB13StringBuilder13write__objectGiE(_writer_47, j);
+        _M0IPB13StringBuilderPB6Logger13write__string(_writer_47, " }");
+      } else {
+        const _writer_48 = b;
+        _M0IPB13StringBuilderPB6Logger13write__string(_writer_48, " else if ");
+        _M0MPB13StringBuilder13write__objectGsE(_writer_48, cond);
+        _M0IPB13StringBuilderPB6Logger13write__string(_writer_48, " { ");
+        _M0MPB13StringBuilder13write__objectGiE(_writer_48, j);
+        _M0IPB13StringBuilderPB6Logger13write__string(_writer_48, " }");
+      }
+      _tmp$3 = j + 1 | 0;
+      continue;
+    } else {
+      break;
+    }
+  }
+  const _writer_49 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_49, " else { ");
+  _M0MPB13StringBuilder13write__objectGiE(_writer_49, num_branches);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_49, " }\n");
+  const _writer_50 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_50, "    if _svon_new != ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_50, branch_var);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_50, ".val {\n");
+  _M0IPB13StringBuilderPB6Logger13write__string(b, "      ");
+  const _bind$4 = 0;
+  let _tmp$4 = _bind$4;
+  while (true) {
+    const j = _tmp$4;
+    if (j < num_branches) {
+      const frag = `${self_var}_${_M0MPC13int3Int18to__string_2einner(j, 10)}`;
+      if (j === 0) {
+        const _writer_51 = b;
+        _M0IPB13StringBuilderPB6Logger13write__string(_writer_51, "if ");
+        _M0MPB13StringBuilder13write__objectGsE(_writer_51, branch_var);
+        _M0IPB13StringBuilderPB6Logger13write__string(_writer_51, ".val == 0 {");
+      } else {
+        const _writer_52 = b;
+        _M0IPB13StringBuilderPB6Logger13write__string(_writer_52, " else if ");
+        _M0MPB13StringBuilder13write__objectGsE(_writer_52, branch_var);
+        _M0IPB13StringBuilderPB6Logger13write__string(_writer_52, ".val == ");
+        _M0MPB13StringBuilder13write__objectGiE(_writer_52, j);
+        _M0IPB13StringBuilderPB6Logger13write__string(_writer_52, " {");
+      }
+      const _writer_53 = b;
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_53, " ");
+      _M0MPB13StringBuilder13write__objectGsE(_writer_53, prefix);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_53, "node_remove_child(");
+      _M0MPB13StringBuilder13write__objectGsE(_writer_53, parent);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_53, ", ");
+      _M0MPB13StringBuilder13write__objectGsE(_writer_53, frag);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_53, ") }\n");
+      if (j < (num_branches - 1 | 0)) {
+        _M0IPB13StringBuilderPB6Logger13write__string(b, "      ");
+      }
+      _tmp$4 = j + 1 | 0;
+      continue;
+    } else {
+      break;
+    }
+  }
+  _M0IPB13StringBuilderPB6Logger13write__string(b, "      ");
+  const _bind$5 = 0;
+  let _tmp$5 = _bind$5;
+  while (true) {
+    const j = _tmp$5;
+    if (j < num_branches) {
+      const frag = `${self_var}_${_M0MPC13int3Int18to__string_2einner(j, 10)}`;
+      if (j === 0) {
+        const _writer_54 = b;
+        _M0IPB13StringBuilderPB6Logger13write__string(_writer_54, "if _svon_new == 0 {");
+      } else {
+        const _writer_55 = b;
+        _M0IPB13StringBuilderPB6Logger13write__string(_writer_55, " else if _svon_new == ");
+        _M0MPB13StringBuilder13write__objectGiE(_writer_55, j);
+        _M0IPB13StringBuilderPB6Logger13write__string(_writer_55, " {");
+      }
+      const _writer_56 = b;
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_56, " ");
+      _M0MPB13StringBuilder13write__objectGsE(_writer_56, prefix);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_56, "node_insert_before(");
+      _M0MPB13StringBuilder13write__objectGsE(_writer_56, parent);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_56, ", ");
+      _M0MPB13StringBuilder13write__objectGsE(_writer_56, frag);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_56, ", ");
+      _M0MPB13StringBuilder13write__objectGsE(_writer_56, anchor);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_56, ") }\n");
+      if (j < (num_branches - 1 | 0)) {
+        _M0IPB13StringBuilderPB6Logger13write__string(b, "      ");
+      }
+      _tmp$5 = j + 1 | 0;
+      continue;
+    } else {
+      break;
+    }
+  }
+  const _writer_57 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_57, "      ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_57, branch_var);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_57, ".val = _svon_new\n");
+  _M0IPB13StringBuilderPB6Logger13write__string(b, "    }\n");
+  _M0IPB13StringBuilderPB6Logger13write__string(b, "    Option::None\n");
+  _M0IPB13StringBuilderPB6Logger13write__string(b, "  })\n");
 }
 function _M0FP38username4svon8compiler15transform__line(line, standalone) {
   if (line === "") {
@@ -2180,6 +3232,41 @@ function _M0FP38username4svon8compiler15transform__line(line, standalone) {
     const _tmp$6 = new _M0TPC16string10StringView(_bind$6, 0, _bind$6.length);
     const _bind$7 = "@svon.effect(";
     result.val = _M0MPC16string6String12replace__all(_tmp$5, _tmp$6, new _M0TPC16string10StringView(_bind$7, 0, _bind$7.length));
+    const _tmp$7 = result.val;
+    const _bind$8 = "DomNode";
+    const _tmp$8 = new _M0TPC16string10StringView(_bind$8, 0, _bind$8.length);
+    const _bind$9 = "@svon.DomNode";
+    result.val = _M0MPC16string6String12replace__all(_tmp$7, _tmp$8, new _M0TPC16string10StringView(_bind$9, 0, _bind$9.length));
+    const _tmp$9 = result.val;
+    const _bind$10 = "dom_debug(";
+    const _tmp$10 = new _M0TPC16string10StringView(_bind$10, 0, _bind$10.length);
+    const _bind$11 = "@svon.dom_debug(";
+    result.val = _M0MPC16string6String12replace__all(_tmp$9, _tmp$10, new _M0TPC16string10StringView(_bind$11, 0, _bind$11.length));
+    const _tmp$11 = result.val;
+    const _bind$12 = "console.log(";
+    const _tmp$12 = new _M0TPC16string10StringView(_bind$12, 0, _bind$12.length);
+    const _bind$13 = "@svon.console_log(";
+    result.val = _M0MPC16string6String12replace__all(_tmp$11, _tmp$12, new _M0TPC16string10StringView(_bind$13, 0, _bind$13.length));
+    const _tmp$13 = result.val;
+    const _bind$14 = "console.info(";
+    const _tmp$14 = new _M0TPC16string10StringView(_bind$14, 0, _bind$14.length);
+    const _bind$15 = "@svon.console_info(";
+    result.val = _M0MPC16string6String12replace__all(_tmp$13, _tmp$14, new _M0TPC16string10StringView(_bind$15, 0, _bind$15.length));
+    const _tmp$15 = result.val;
+    const _bind$16 = "console.warn(";
+    const _tmp$16 = new _M0TPC16string10StringView(_bind$16, 0, _bind$16.length);
+    const _bind$17 = "@svon.console_warn(";
+    result.val = _M0MPC16string6String12replace__all(_tmp$15, _tmp$16, new _M0TPC16string10StringView(_bind$17, 0, _bind$17.length));
+    const _tmp$17 = result.val;
+    const _bind$18 = "console.error(";
+    const _tmp$18 = new _M0TPC16string10StringView(_bind$18, 0, _bind$18.length);
+    const _bind$19 = "@svon.console_info(";
+    result.val = _M0MPC16string6String12replace__all(_tmp$17, _tmp$18, new _M0TPC16string10StringView(_bind$19, 0, _bind$19.length));
+    const _tmp$19 = result.val;
+    const _bind$20 = "console.debug(";
+    const _tmp$20 = new _M0TPC16string10StringView(_bind$20, 0, _bind$20.length);
+    const _bind$21 = "@svon.console_info(";
+    result.val = _M0MPC16string6String12replace__all(_tmp$19, _tmp$20, new _M0TPC16string10StringView(_bind$21, 0, _bind$21.length));
     return result.val;
   }
 }
@@ -2217,12 +3304,12 @@ function _M0FP38username4svon8compiler16generate__script(script, b, standalone, 
 }
 function _M0FP38username4svon8compiler26generate__style__injection(css, b, standalone) {
   const prefix = standalone ? "" : "@svon.";
-  const _writer_23 = b;
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_23, "  let style_el : ");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_23, prefix);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_23, "DomNode = ");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_23, prefix);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_23, "document_create_element(\"style\")\n");
+  const _writer_35 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_35, "  let style_el : ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_35, prefix);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_35, "DomNode = ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_35, prefix);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_35, "document_create_element(\"style\")\n");
   const _bind = "\"";
   const _tmp = new _M0TPC16string10StringView(_bind, 0, _bind.length);
   const _bind$2 = "\\\"";
@@ -2231,20 +3318,20 @@ function _M0FP38username4svon8compiler26generate__style__injection(css, b, stand
   const _tmp$3 = new _M0TPC16string10StringView(_bind$3, 0, _bind$3.length);
   const _bind$4 = "\\n";
   const escaped = _M0MPC16string6String12replace__all(_tmp$2, _tmp$3, new _M0TPC16string10StringView(_bind$4, 0, _bind$4.length));
-  const _writer_24 = b;
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_24, "  ");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_24, prefix);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_24, "node_set_text_content(style_el, \"");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_24, escaped);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_24, "\")\n");
-  const _writer_25 = b;
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_25, "  let head = ");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_25, prefix);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_25, "document_head()\n");
-  const _writer_26 = b;
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_26, "  ");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_26, prefix);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_26, "node_append_child(head, style_el)\n");
+  const _writer_36 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_36, "  ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_36, prefix);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_36, "node_set_text_content(style_el, \"");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_36, escaped);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_36, "\")\n");
+  const _writer_37 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_37, "  let head = ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_37, prefix);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_37, "document_head()\n");
+  const _writer_38 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_38, "  ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_38, prefix);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_38, "node_append_child(head, style_el)\n");
 }
 function _M0FP38username4svon8compiler18collect__fn__names(expr, calls) {
   const s = expr;
@@ -2364,62 +3451,106 @@ function _M0FP38username4svon8compiler14collect__calls(nodes, calls) {
   while (true) {
     const i = _tmp;
     if (i < _bind$2) {
-      let el;
+      let block;
       _L: {
         _L$2: {
-          let expr;
+          let block$2;
           _L$3: {
             _L$4: {
-              const _bind$3 = _M0MPC15array5Array2atGsE(nodes, i);
-              if (_bind$3.$tag === 0) {
-                const _Text = _bind$3;
-                const _x = _Text._0;
-                if (_x.$tag === 1) {
-                  const _Expr = _x;
-                  const _expr = _Expr._0;
-                  expr = _expr;
-                  break _L$4;
+              let el;
+              _L$5: {
+                _L$6: {
+                  let expr;
+                  _L$7: {
+                    _L$8: {
+                      const _bind$3 = _M0MPC15array5Array2atGsE(nodes, i);
+                      switch (_bind$3.$tag) {
+                        case 0: {
+                          const _Text = _bind$3;
+                          const _x = _Text._0;
+                          if (_x.$tag === 1) {
+                            const _Expr = _x;
+                            const _expr = _Expr._0;
+                            expr = _expr;
+                            break _L$8;
+                          }
+                          break;
+                        }
+                        case 1: {
+                          const _Element = _bind$3;
+                          const _el = _Element._0;
+                          el = _el;
+                          break _L$6;
+                        }
+                        case 2: {
+                          const _If = _bind$3;
+                          const _block = _If._0;
+                          block$2 = _block;
+                          break _L$4;
+                        }
+                        default: {
+                          const _For = _bind$3;
+                          const _block$2 = _For._0;
+                          block = _block$2;
+                          break _L$2;
+                        }
+                      }
+                      break _L$7;
+                    }
+                    const val = expr;
+                    _M0FP38username4svon8compiler18collect__fn__names(val, calls);
+                  }
+                  break _L$5;
                 }
-              } else {
-                const _Element = _bind$3;
-                const _el = _Element._0;
-                el = _el;
-                break _L$2;
+                const _bind$3 = 0;
+                const _bind$4 = el.attributes.length;
+                let _tmp$2 = _bind$3;
+                while (true) {
+                  const j = _tmp$2;
+                  if (j < _bind$4) {
+                    let handler;
+                    _L$7: {
+                      _L$8: {
+                        const _bind$5 = _M0MPC15array5Array2atGsE(el.attributes, j);
+                        if (_bind$5.$tag === 1) {
+                          const _Event = _bind$5;
+                          const _handler = _Event._1;
+                          handler = _handler;
+                          break _L$8;
+                        }
+                        break _L$7;
+                      }
+                      _M0MPC15array5Array4pushGRP38username4svon8compiler8HtmlNodeE(calls, handler);
+                    }
+                    _tmp$2 = j + 1 | 0;
+                    continue;
+                  } else {
+                    break;
+                  }
+                }
+                _M0FP38username4svon8compiler14collect__calls(el.children, calls);
               }
               break _L$3;
             }
-            const val = expr;
-            _M0FP38username4svon8compiler18collect__fn__names(val, calls);
+            _M0FP38username4svon8compiler14collect__calls(block$2.body, calls);
+            const _bind$3 = 0;
+            const _bind$4 = block$2.else_ifs.length;
+            let _tmp$2 = _bind$3;
+            while (true) {
+              const j = _tmp$2;
+              if (j < _bind$4) {
+                _M0FP38username4svon8compiler14collect__calls(_M0MPC15array5Array2atGsE(block$2.else_ifs, j).body, calls);
+                _tmp$2 = j + 1 | 0;
+                continue;
+              } else {
+                break;
+              }
+            }
+            _M0FP38username4svon8compiler14collect__calls(block$2.else_body, calls);
           }
           break _L;
         }
-        const _bind$3 = 0;
-        const _bind$4 = el.attributes.length;
-        let _tmp$2 = _bind$3;
-        while (true) {
-          const j = _tmp$2;
-          if (j < _bind$4) {
-            let handler;
-            _L$3: {
-              _L$4: {
-                const _bind$5 = _M0MPC15array5Array2atGsE(el.attributes, j);
-                if (_bind$5.$tag === 1) {
-                  const _Event = _bind$5;
-                  const _handler = _Event._1;
-                  handler = _handler;
-                  break _L$4;
-                }
-                break _L$3;
-              }
-              _M0MPC15array5Array4pushGRP38username4svon8compiler8HtmlNodeE(calls, handler);
-            }
-            _tmp$2 = j + 1 | 0;
-            continue;
-          } else {
-            break;
-          }
-        }
-        _M0FP38username4svon8compiler14collect__calls(el.children, calls);
+        _M0FP38username4svon8compiler14collect__calls(block.body, calls);
       }
       _tmp = i + 1 | 0;
       continue;
@@ -3085,8 +4216,8 @@ function _M0FP48username4svon3cli5svonc17starter__template() {
   _M0IPB13StringBuilderPB6Logger13write__string(b, "fn increment() { count.set(count.get() + 1) }\n");
   _M0IPB13StringBuilderPB6Logger13write__string(b, "</script>\n\n");
   _M0IPB13StringBuilderPB6Logger13write__string(b, "<div>\n");
-  _M0IPB13StringBuilderPB6Logger13write__string(b, "  <h1>Count: {count.get()}</h1>\n");
-  _M0IPB13StringBuilderPB6Logger13write__string(b, "  <button onclick={increment}>+</button>\n");
+  _M0IPB13StringBuilderPB6Logger13write__string(b, "  <h1>Welcome to Svon. Count: {count.get()}</h1>\n");
+  _M0IPB13StringBuilderPB6Logger13write__string(b, "  click this: <button onclick={increment}>+</button>\n");
   _M0IPB13StringBuilderPB6Logger13write__string(b, "</div>\n");
   return _M0MPB13StringBuilder10to__string(b);
 }
@@ -3094,7 +4225,7 @@ function _M0FP48username4svon3cli5svonc12ensure__init(dir) {
   const svon_dep = `${dir}/deps/svon`;
   const base = _M0FP48username4svon3cli5svonc8cli__dir();
   _M0FP48username4svon3cli5svonc5mkdir(svon_dep);
-  const rts = ["types.mbt", "signal.mbt", "runtime.mbt", "dom.mbt", "state.mbt", "svon.mbt"];
+  const rts = ["types.mbt", "signal.mbt", "runtime.mbt", "dom.mbt", "state.mbt", "svon.mbt", "console.mbt"];
   const _bind = 0;
   const _bind$2 = rts.length;
   let _tmp = _bind;
@@ -3171,7 +4302,7 @@ function _M0FP48username4svon3cli5svonc9cmd__init(args) {
   const svon_dep = `${dir}/deps/svon`;
   _M0FP48username4svon3cli5svonc5mkdir(svon_dep);
   const base = _M0FP48username4svon3cli5svonc8cli__dir();
-  const files = ["types.mbt", "signal.mbt", "runtime.mbt", "dom.mbt", "state.mbt", "svon.mbt"];
+  const files = ["types.mbt", "signal.mbt", "runtime.mbt", "dom.mbt", "state.mbt", "svon.mbt", "console.mbt"];
   const _bind = 0;
   const _bind$2 = files.length;
   let _tmp = _bind;

@@ -63,6 +63,32 @@ pub(all) struct Template {
 pub(all) enum HtmlNode {
   Text(TextChunk)       // A text fragment — either plain text or an interpolated expression.
   Element(ElementNode)  // A complete HTML element with a tag, attributes, and children.
+  If(IfBlock)           // A Svelte-style {#if}…{/if} control-flow block.
+  For(ForBlock)         // A {#for …}…{/for} iteration block.
+}
+
+///|
+/// A {#for expr}…{/for} iteration block.  The for expression is emitted
+/// directly into the generated MoonBit code, so it supports the full
+/// MoonBit iteration syntax: `{element in list}`, `{i, el in list}`,
+/// `{k, v in map}`.
+pub(all) struct ForBlock {
+  for_expr : String           // The iteration clause (between {#for and }).
+  body : Array[HtmlNode]      // The repeated content.
+}
+
+///|
+/// A Svelte-style {#if}…{/if} block with optional {:else if} and {:else} branches.
+pub(all) struct IfBlock {
+  condition : String                    // MoonBit expression for the {#if condition}
+  body : Array[HtmlNode]                // Content rendered when condition is true
+  else_ifs : Array[ElseIfBranch]        // {:else if condition} branches (0 or more)
+  else_body : Array[HtmlNode]           // Content rendered when no condition matches
+}
+
+pub(all) struct ElseIfBranch {
+  condition : String
+  body : Array[HtmlNode]
 }
 
 ///|

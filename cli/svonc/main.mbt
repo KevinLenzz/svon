@@ -127,7 +127,7 @@ fn cmd_init(args : Array[String]) -> Unit {
   mkdir(svon_dep)
   let base = cli_dir()
   let files = [
-    "types.mbt", "signal.mbt", "runtime.mbt", "dom.mbt", "state.mbt", "svon.mbt",
+    "types.mbt", "signal.mbt", "runtime.mbt", "dom.mbt", "state.mbt", "svon.mbt", "console.mbt",
   ]
   for i in 0..<files.length() {
     let name = files[i]
@@ -276,7 +276,7 @@ fn ensure_init(dir : String) -> Unit {
   let base = cli_dir()
   mkdir(svon_dep)
   let rts = [
-    "types.mbt", "signal.mbt", "runtime.mbt", "dom.mbt", "state.mbt", "svon.mbt",
+    "types.mbt", "signal.mbt", "runtime.mbt", "dom.mbt", "state.mbt", "svon.mbt", "console.mbt",
   ]
   for i in 0..<rts.length() {
     let n = rts[i]

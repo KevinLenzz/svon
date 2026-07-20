@@ -70,7 +70,8 @@ pub fn generate(t : Template, standalone : Bool) -> String {
 
   // Create the outermost container element (always a `<div>`).
   let prefix = if standalone { "" } else { "@svon." }
-  b <+ "  let root : \{prefix}DomNode = \{prefix}document_create_element(\"div\")\n"
+  b <+
+    "  let root : \{prefix}DomNode = \{prefix}document_create_element(\"div\")\n"
 
   // Recursively walk the parsed HTML tree and emit MoonBit statements
   // that build the corresponding DOM subtree.
@@ -99,7 +100,12 @@ pub fn generate(t : Template, standalone : Bool) -> String {
 ///   containing multiple lines).
 /// - `b`      : the `StringBuilder` into which the transformed lines are
 ///   written.
-fn generate_script(script : String, b : StringBuilder, standalone : Bool, script_start_line : Int) -> Unit {
+fn generate_script(
+  script : String,
+  b : StringBuilder,
+  standalone : Bool,
+  script_start_line : Int,
+) -> Unit {
   let raw_lines = script.split("\n")
   let mut line_index = 0
   for line in raw_lines {
@@ -151,6 +157,13 @@ fn transform_line(line : String, standalone : Bool) -> String {
     result = result.replace_all(old="state(", new="@svon.state(")
     result = result.replace_all(old="derived(", new="@svon.derived(")
     result = result.replace_all(old="effect(", new="@svon.effect(")
+    result = result.replace_all(old="DomNode", new="@svon.DomNode")
+    result = result.replace_all(old="dom_debug(", new="@svon.dom_debug(")
+    result = result.replace_all(old="console.log(", new="@svon.console_log(")
+    result = result.replace_all(old="console.info(", new="@svon.console_info(")
+    result = result.replace_all(old="console.warn(", new="@svon.console_warn(")
+    result = result.replace_all(old="console.error(", new="@svon.console_info(")
+    result = result.replace_all(old="console.debug(", new="@svon.console_info(")
     result
   }
 }
@@ -170,8 +183,14 @@ fn generate_nodes(
   for i in 0..<nodes.length() {
     let node = nodes[i]
     match node {
-      HtmlNode::Text(chunk) => generate_text(chunk, parent, b, el_id, standalone)
-      HtmlNode::Element(el) => generate_element(el, parent, b, el_id, templates, standalone)
+      HtmlNode::Text(chunk) =>
+        generate_text(chunk, parent, b, el_id, standalone)
+      HtmlNode::Element(el) =>
+        generate_element(el, parent, b, el_id, templates, standalone)
+      HtmlNode::If(block) =>
+        generate_if(block, parent, b, el_id, templates, standalone)
+      HtmlNode::For(block) =>
+        generate_for(block, parent, b, el_id, templates, standalone)
     }
   }
 }
@@ -214,21 +233,25 @@ fn generate_text(
   match chunk {
     // ── Static text ─────────────────────────────────────────────────
     TextChunk::Static(s) => {
-      b <+ "  let t\{id_str} : \{prefix}DomNode = \{prefix}document_create_text_node(\"\{s}\")\n"
+      b <+
+        "  let t\{id_str} : \{prefix}DomNode = \{prefix}document_create_text_node(\"\{s}\")\n"
       b <+ "  \{prefix}node_append_child(\{parent}, t\{id_str})\n"
     }
     // ── Dynamic expression ──────────────────────────────────────────
     TextChunk::Expr(expr) => {
-      b <+ "  let t\{id_str} : \{prefix}DomNode = \{prefix}document_create_text_node(\"\")\n"
+      b <+
+        "  let t\{id_str} : \{prefix}DomNode = \{prefix}document_create_text_node(\"\")\n"
       b <+ "  \{prefix}node_append_child(\{parent}, t\{id_str})\n"
       b <+ "        let _ = \{prefix}effect(fn() {\n"
-      b <+ "    \{prefix}node_set_text_content(t\{id_str}, (\{expr}).to_string())\n"
+      b <+
+        "    \{prefix}node_set_text_content(t\{id_str}, (\{expr}).to_string())\n"
       b <+ "    Option::None\n"
       b <+ "  })\n"
     }
   }
 }
 
+///|
 fn generate_element(
   el : ElementNode,
   parent : String,
@@ -262,23 +285,53 @@ fn generate_element(
   }
 
   // Dynamic element — imperative construction
-  b <+ "  let \{el_var} : \{prefix}DomNode = \{prefix}document_create_element(\"\{el.tag}\")\n"
+  b <+
+    "  let \{el_var} : \{prefix}DomNode = \{prefix}document_create_element(\"\{el.tag}\")\n"
 
   // ── Attributes ──────────────────────────────────────────────────
   for i in 0..<el.attributes.length() {
     let attr = el.attributes[i]
     match attr {
-      Attribute::Static(name, value) => {
-        b <+ "  \{prefix}node_set_attribute(\{el_var}, \"\{name}\", \"\{value}\")\n"
-      }
-      Attribute::Event(event, handler) => {
-        b <+ "  \{prefix}node_add_event_listener(\{el_var}, \"\{event}\", \{handler})\n"
-      }
+      Attribute::Static(name, value) =>
+        b <+
+          "  \{prefix}node_set_attribute(\{el_var}, \"\{name}\", \"\{value}\")\n"
+      Attribute::Event(event, handler) =>
+        b <+
+          "  \{prefix}node_add_event_listener(\{el_var}, \"\{event}\", \{handler_prefix(handler)})\n"
       Attribute::Bind(attr_name, expr) => {
-        b <+ "        let _ = \{prefix}effect(fn() {\n"
-        b <+ "    \{prefix}node_set_attribute(\{el_var}, \"\{attr_name}\", (\{expr}).to_string())\n"
-        b <+ "    Option::None\n"
-        b <+ "  })\n"
+        if attr_name == "this" {
+          let st_var = bind_state_var(expr)
+          if st_var != expr && st_var.length() > 0 {
+            b <+ "  \{st_var}.set(Option::Some(\{el_var}))\n"
+          } else {
+            b <+ "  \{expr} = Option::Some(\{el_var})\n"
+          }
+        } else if attr_name == "value" {
+          b <+ "        let _ = \{prefix}effect(fn() {\n"
+          b <+ "    \{prefix}node_set_value(\{el_var}, (\{expr}).to_string())\n"
+          b <+ "    Option::None\n"
+          b <+ "  })\n"
+        } else if attr_name == "open" {
+          b <+ "        let _ = \{prefix}effect(fn() {\n"
+          b <+ "    \{prefix}node_set_open(\{el_var}, (\{expr}))\n"
+          b <+ "    Option::None\n"
+          b <+ "  })\n"
+        } else {
+          b <+ "        let _ = \{prefix}effect(fn() {\n"
+          b <+
+            "    \{prefix}node_set_attribute(\{el_var}, \"\{attr_name}\", (\{expr}).to_string())\n"
+          b <+ "    Option::None\n"
+          b <+ "  })\n"
+        }
+        let st_var = bind_state_var(expr)
+        let event = bind_event(attr_name)
+        let getter = bind_getter(el, attr_name)
+        if st_var.length() > 0 && event.length() > 0 && getter.length() > 0 {
+          b <+
+            "  \{prefix}node_add_event_listener(\{el_var}, \"\{event}\", fn() {\n"
+          b <+ "    \{st_var}.set(\{prefix}\{getter}(\{el_var}))\n"
+          b.write_string("  })\n")
+        }
       }
     }
   }
@@ -290,6 +343,7 @@ fn generate_element(
   b <+ "  \{prefix}node_append_child(\{parent}, \{el_var})\n"
 }
 
+///|
 /// Check whether an element and all its descendants are fully static
 /// (no event handlers, no reactive bindings, no expression children).
 fn is_static_element(el : ElementNode) -> Bool {
@@ -303,12 +357,20 @@ fn is_static_element(el : ElementNode) -> Bool {
     match el.children[i] {
       HtmlNode::Text(TextChunk::Expr(_)) => return false
       HtmlNode::Text(TextChunk::Static(_)) => continue
-      HtmlNode::Element(child) => if !is_static_element(child) { return false } else { continue }
+      HtmlNode::Element(child) =>
+        if !is_static_element(child) {
+          return false
+        } else {
+          continue
+        }
+      HtmlNode::If(_) => return false
+      HtmlNode::For(_) => return false
     }
   }
   true
 }
 
+///|
 /// Serialize a static element and its children to an HTML string.
 fn element_to_html(el : ElementNode) -> String {
   let b = StringBuilder::new()
@@ -332,6 +394,8 @@ fn element_to_html(el : ElementNode) -> String {
       HtmlNode::Text(TextChunk::Static(s)) => b.write_string(escape_html(s))
       HtmlNode::Text(TextChunk::Expr(_)) => b.write_string(" ")
       HtmlNode::Element(child) => b.write_string(element_to_html(child))
+      HtmlNode::If(_) => b.write_string(" ")
+      HtmlNode::For(_) => b.write_string(" ")
     }
   }
   b.write_string("</")
@@ -340,22 +404,30 @@ fn element_to_html(el : ElementNode) -> String {
   b.to_string()
 }
 
+///|
 /// Escape a string for safe embedding in a MoonBit string literal.
 fn escape_mbt(s : String) -> String {
-  s.replace_all(old="\\", new="\\\\")
-    .replace_all(old="\"", new="\\\"")
-    .replace_all(old="\n", new="\\n")
+  s
+  .replace_all(old="\\", new="\\\\")
+  .replace_all(old="\"", new="\\\"")
+  .replace_all(old="\n", new="\\n")
 }
 
+///|
 /// Collect function names referenced in template expressions and emit
 /// dummy references to suppress MoonBit "unused function" warnings.
-fn suppress_unused(nodes : Array[HtmlNode], b : StringBuilder, script : String) -> Unit {
+fn suppress_unused(
+  nodes : Array[HtmlNode],
+  b : StringBuilder,
+  script : String,
+) -> Unit {
   let calls = Array::new(capacity=4)
   collect_calls(nodes, calls)
   for i in 0..<calls.length() {
     let name = calls[i]
     // Only suppress if the function is defined in the script
-    if script.contains("fn " + name + "(") || script.contains("fn " + name + " ") {
+    if script.contains("fn " + name + "(") ||
+      script.contains("fn " + name + " ") {
       b.write_string("  let _svon_ref_")
       b.write_string(name)
       b.write_string(" = ")
@@ -365,6 +437,7 @@ fn suppress_unused(nodes : Array[HtmlNode], b : StringBuilder, script : String) 
   }
 }
 
+///|
 /// Recursively collect function call names from template expressions.
 fn collect_calls(nodes : Array[HtmlNode], calls : Array[String]) -> Unit {
   for i in 0..<nodes.length() {
@@ -378,18 +451,25 @@ fn collect_calls(nodes : Array[HtmlNode], calls : Array[String]) -> Unit {
         // Check event handlers like onclick={bump}
         for j in 0..<el.attributes.length() {
           match el.attributes[j] {
-            Attribute::Event(_, handler) => {
-              calls.push(handler)
-            }
+            Attribute::Event(_, handler) => calls.push(handler)
             _ => ()
           }
         }
         collect_calls(el.children, calls)
       }
+      HtmlNode::If(block) => {
+        collect_calls(block.body, calls)
+        for j in 0..<block.else_ifs.length() {
+          collect_calls(block.else_ifs[j].body, calls)
+        }
+        collect_calls(block.else_body, calls)
+      }
+      HtmlNode::For(block) => collect_calls(block.body, calls)
     }
   }
 }
 
+///|
 /// Extract function names from expressions like "aaa()", "foo.bar()", "baz().x".
 fn collect_fn_names(expr : String, calls : Array[String]) -> Unit {
   let s = expr
@@ -417,7 +497,9 @@ fn collect_fn_names(expr : String, calls : Array[String]) -> Unit {
               break
             }
           }
-          if !found { calls.push(name) }
+          if !found {
+            calls.push(name)
+          }
         }
         i = k + 1
         continue
@@ -428,14 +510,18 @@ fn collect_fn_names(expr : String, calls : Array[String]) -> Unit {
     i = i + 1
   }
 }
+
+///|
 fn escape_html(s : String) -> String {
-  s.replace_all(old="&", new="&amp;")
-    .replace_all(old="\"", new="&quot;")
-    .replace_all(old="<", new="&lt;")
-    .replace_all(old=">", new="&gt;")
-    .replace_all(old="\n", new="\\n")
+  s
+  .replace_all(old="&", new="&amp;")
+  .replace_all(old="\"", new="&quot;")
+  .replace_all(old="<", new="&lt;")
+  .replace_all(old=">", new="&gt;")
+  .replace_all(old="\n", new="\\n")
 }
 
+///|
 /// First pass: scan the node tree and collect all static element subtrees.
 fn collect_templates(
   nodes : Array[HtmlNode],
@@ -444,7 +530,7 @@ fn collect_templates(
 ) -> Unit {
   for i in 0..<nodes.length() {
     match nodes[i] {
-      HtmlNode::Element(el) => {
+      HtmlNode::Element(el) =>
         if is_static_element(el) {
           let html = element_to_html(el)
           let mut found = false
@@ -460,7 +546,6 @@ fn collect_templates(
         } else {
           collect_templates(el.children, templates, template_ids)
         }
-      }
       _ => ()
     }
   }
@@ -482,13 +567,20 @@ fn collect_templates(
 /// Parameters:
 /// - `css` : the full CSS source string from the `<style>` block.
 /// - `b`   : the shared `StringBuilder` for the generated code.
-fn generate_style_injection(css : String, b : StringBuilder, standalone : Bool) -> Unit {
+fn generate_style_injection(
+  css : String,
+  b : StringBuilder,
+  standalone : Bool,
+) -> Unit {
   let prefix = if standalone { "" } else { "@svon." }
-  b <+ "  let style_el : \{prefix}DomNode = \{prefix}document_create_element(\"style\")\n"
+  b <+
+    "  let style_el : \{prefix}DomNode = \{prefix}document_create_element(\"style\")\n"
 
   // Escape double-quotes and newlines so the CSS can be used as a
   // MoonBit string literal without breaking syntax.
-  let escaped = css.replace_all(old="\"", new="\\\"").replace_all(old="\n", new="\\n")
+  let escaped = css
+    .replace_all(old="\"", new="\\\"")
+    .replace_all(old="\n", new="\\n")
 
   // Set the CSS text as the content of the style element.
   b <+ "  \{prefix}node_set_text_content(style_el, \"\{escaped}\")\n"
@@ -498,4 +590,194 @@ fn generate_style_injection(css : String, b : StringBuilder, standalone : Bool) 
 
   // Append the style element to the head so the browser applies the CSS.
   b <+ "  \{prefix}node_append_child(head, style_el)\n"
+}
+
+///|
+fn generate_if(
+  block : IfBlock,
+  parent : String,
+  b : StringBuilder,
+  el_id : Ref[Int],
+  templates : Array[String],
+  standalone : Bool,
+) -> Unit {
+  let prefix = if standalone { "" } else { "@svon." }
+  let id = el_id.val.to_string()
+  el_id.val = el_id.val + 1
+  let anchor = "_svon_a" + id
+  let self_var = "_svon_s" + id
+  let branch_var = "_svon_b" + id
+  let num_branches = 1 + block.else_ifs.length() + 1
+  b <+ "  let \{anchor} = \{prefix}document_create_comment(\"#if\")\n"
+  b <+ "  \{prefix}node_append_child(\{parent}, \{anchor})\n"
+  for j in 0..<num_branches {
+    let frag = self_var + "_" + j.to_string()
+    b <+ "  let \{frag} = \{prefix}document_create_container()\n"
+    if j == 0 {
+      generate_nodes(block.body, frag, b, el_id, templates, standalone)
+    } else if j <= block.else_ifs.length() {
+      generate_nodes(
+        block.else_ifs[j - 1].body,
+        frag,
+        b,
+        el_id,
+        templates,
+        standalone,
+      )
+    } else {
+      generate_nodes(block.else_body, frag, b, el_id, templates, standalone)
+    }
+  }
+  b <+ "  let \{branch_var} = Ref(0)\n"
+  b.write_string("  ")
+  for j in 0..<num_branches {
+    let frag = self_var + "_" + j.to_string()
+    let cond = if j == 0 {
+      block.condition
+    } else if j <= block.else_ifs.length() {
+      block.else_ifs[j - 1].condition
+    } else {
+      "true"
+    }
+    if j == 0 {
+      b.write_string("if ")
+    } else {
+      b.write_string(" else if ")
+    }
+    b <+ "\{cond} {\n"
+    b <+ "    \{prefix}node_insert_before(\{parent}, \{frag}, \{anchor})\n"
+    b <+ "    \{branch_var}.val = \{j}\n"
+    b.write_string("  }")
+  }
+  b.write_string("\n")
+  b <+ "        let _ = \{prefix}effect(fn() {\n"
+  b.write_string("    let _svon_new = ")
+  for j in 0..<num_branches {
+    let cond = if j == 0 {
+      block.condition
+    } else if j <= block.else_ifs.length() {
+      block.else_ifs[j - 1].condition
+    } else {
+      "true"
+    }
+    if j == 0 {
+      b <+ "if \{cond} { \{j} }"
+    } else {
+      b <+ " else if \{cond} { \{j} }"
+    }
+  }
+  b <+ " else { \{num_branches} }\n"
+  b <+ "    if _svon_new != \{branch_var}.val {\n"
+  b.write_string("      ")
+  for j in 0..<num_branches {
+    let frag = self_var + "_" + j.to_string()
+    if j == 0 {
+      b <+ "if \{branch_var}.val == 0 {"
+    } else {
+      b <+ " else if \{branch_var}.val == \{j} {"
+    }
+    b <+ " \{prefix}node_remove_child(\{parent}, \{frag}) }\n"
+    if j < num_branches - 1 {
+      b.write_string("      ")
+    }
+  }
+  b.write_string("      ")
+  for j in 0..<num_branches {
+    let frag = self_var + "_" + j.to_string()
+    if j == 0 {
+      b <+ "if _svon_new == 0 {"
+    } else {
+      b <+ " else if _svon_new == \{j} {"
+    }
+    b <+ " \{prefix}node_insert_before(\{parent}, \{frag}, \{anchor}) }\n"
+    if j < num_branches - 1 {
+      b.write_string("      ")
+    }
+  }
+  b <+ "      \{branch_var}.val = _svon_new\n"
+  b.write_string("    }\n")
+  b.write_string("    Option::None\n")
+  b.write_string("  })\n")
+}
+
+///|
+fn generate_for(
+  block : ForBlock,
+  parent : String,
+  b : StringBuilder,
+  el_id : Ref[Int],
+  templates : Array[String],
+  standalone : Bool,
+) -> Unit {
+  let prefix = if standalone { "" } else { "@svon." }
+  let id = el_id.val.to_string()
+  el_id.val = el_id.val + 1
+  let anchor = "_svon_a" + id
+  let containers = "_svon_c" + id
+  b <+ "  let \{anchor} = \{prefix}document_create_comment(\"#for\")\n"
+  b <+ "  \{prefix}node_append_child(\{parent}, \{anchor})\n"
+  b <+ "  let \{containers} = Ref(Array::new())\n"
+  b <+ "        let _ = \{prefix}effect(fn() {\n"
+  b <+ "    for c in \{containers}.val {\n"
+  b <+ "      \{prefix}node_remove_child(\{parent}, c)\n"
+  b <+ "    }\n"
+  b <+ "    \{containers}.val = Array::new()\n"
+  b <+ "    for \{block.for_expr} {\n"
+  b <+ "      let _svon_ct = \{prefix}document_create_container()\n"
+  generate_nodes(block.body, "_svon_ct", b, el_id, templates, standalone)
+  b <+ "      \{prefix}node_insert_before(\{parent}, _svon_ct, \{anchor})\n"
+  b <+ "      \{containers}.val.push(_svon_ct)\n"
+  b.write_string("    }\n")
+  b.write_string("    Option::None\n")
+  b.write_string("  })\n")
+}
+
+///|
+fn handler_prefix(h : String) -> String {
+  h
+  .replace_all(old="dom_debug(", new="@svon.dom_debug(")
+  .replace_all(old="console.log(", new="@svon.console_log(")
+  .replace_all(old="console.warn(", new="@svon.console_warn(")
+  .replace_all(old="console.error(", new="@svon.console_error(")
+  .replace_all(old="console.info(", new="@svon.console_info(")
+  .replace_all(old="console.debug(", new="@svon.console_debug(")
+}
+
+///|
+fn bind_state_var(expr : String) -> String {
+  match expr.find(".get()") {
+    Option::Some(pos) => expr.unsafe_substring(start=0, end=pos)
+    Option::None => expr
+  }
+}
+
+///|
+fn bind_event(prop : String) -> String {
+  if prop == "value" {
+    "input"
+  } else if prop == "checked" || prop == "indeterminate" {
+    "change"
+  } else if prop == "open" {
+    "toggle"
+  } else {
+    ""
+  }
+}
+
+///|
+fn bind_getter(el : ElementNode, prop : String) -> String {
+  if prop == "value" {
+    "node_get_value"
+  } else if prop == "checked" {
+    for attr in el.attributes {
+      if attr is Attribute::Static("type", "radio") {
+        return "node_get_value"
+      }
+    }
+    "node_get_checked"
+  } else if prop == "open" {
+    "node_get_open"
+  } else {
+    ""
+  }
 }

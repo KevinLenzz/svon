@@ -1,0 +1,62 @@
+<script lang="moonbit">
+let name = state("")
+let agreed = state(false)
+let selected = state("a")
+let volume_val = state("50")
+let show = state(false)
+let time_val = state("0")
+let speed = state("1.0")
+let paused = state(true)
+let muted = state(false)
+let html = state("<b>edit</b>")
+let mut el : DomNode? = Option::None
+</script>
+
+<div>
+  <h1>Bindings Demo</h1>
+
+  <h2>input bind:value</h2>
+  <input bind:value={name.get()} placeholder="type here"/>
+  <p>You typed: {name.get()}</p>
+
+  <h2>checkbox bind:checked</h2>
+  <label><input type="checkbox" bind:checked={agreed.get()}/> I agree</label>
+  <p>Agreed: {agreed.get().to_string()}</p>
+
+  <h2>radio bind:value</h2>
+  <label><input type="radio" name="sel" bind:value={selected.get()} value="a"/> A</label>
+  <label><input type="radio" name="sel" bind:value={selected.get()} value="b"/> B</label>
+  <label><input type="radio" name="sel" bind:value={selected.get()} value="c"/> C</label>
+  <p>Selected: {selected.get()}</p>
+
+  <h2>range bind:value</h2>
+  <input type="range" min="0" max="100" bind:value={volume_val.get()}/>
+  <p>Volume: {volume_val.get()}</p>
+
+  <h2>details bind:open</h2>
+  <details bind:open={show.get()}>
+    <summary>Toggle me</summary>
+    <p>Content shown: {show.get().to_string()}</p>
+  </details>
+
+  <h2>bind:currentTime + bind:playbackRate + bind:paused + bind:volume + bind:muted</h2>
+  <p>These work on audio/video elements (JS runtime only).</p>
+
+  <h2>contenteditable bind:textContent</h2>
+  <div contenteditable="true" bind:textContent={html.get()}
+       style="border:1px solid #ccc;padding:8px;min-height:24px"></div>
+  <p>HTML: {html.get()}</p>
+
+  <h2>bind:this (DOM reference)</h2>
+  <p bind:this={el}>This paragraph is captured into the `el` variable.
+     You can then call el.focus() or el.scrollIntoView() from script.</p>
+  <p>The reference is set at mount time.</p>
+</div>
+
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 700px; margin: 2rem auto; padding: 0 1rem; }
+  h2 { margin-top: 1.5rem; color: #333; }
+  input, select, textarea { padding: 4px 8px; margin: 4px 0; }
+  label { display: flex; align-items: center; gap: 4px; margin: 4px 0; }
+  [contenteditable] { outline: none; }
+</style>

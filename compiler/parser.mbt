@@ -20,7 +20,7 @@ pub fn parse(source : String) -> Template {
   let html = extract_html(source)
   let html_no_style = remove_style_block(html)
   let diags = Array::new(capacity=4)
-  let nodes = parse_nodes(html_no_style, 0, html_no_style.length(), diags)
+  let nodes = parse_nodes(html_no_style, 0, html_no_style.length(), diags, Ref(0))
   let script_start_line = match source.find("<script") {
     Option::Some(pos) => offset_to_line_col(source, pos).line
     Option::None => 1
@@ -28,6 +28,7 @@ pub fn parse(source : String) -> Template {
   { script, styles, imports, nodes, diagnostics: diags, script_start_line }
 }
 
+///|
 fn extract_html(source : String) -> String {
   let start_tag = "<script lang=\"moonbit\">"
   let end_tag = "</script>"
@@ -49,7 +50,10 @@ fn extract_html(source : String) -> String {
             Option::Some(end) => {
               let before = source.unsafe_substring(start=0, end=start)
               let aft = end + "</script>".length()
-              let after = source.unsafe_substring(start=aft, end=source.length())
+              let after = source.unsafe_substring(
+                start=aft,
+                end=source.length(),
+              )
               before + after
             }
             Option::None => source
@@ -59,19 +63,24 @@ fn extract_html(source : String) -> String {
   }
 }
 
+///|
 fn remove_style_block(source : String) -> String {
   let start_tag = "<style>"
   let end_tag = "</style>"
   match source.find(start_tag) {
-    Option::Some(start) => match source.find(end_tag) {
-      Option::Some(end) => {
-        let before = source.unsafe_substring(start=0, end=start)
-        let after_start = end + end_tag.length()
-        let after = source.unsafe_substring(start=after_start, end=source.length())
-        before + after
+    Option::Some(start) =>
+      match source.find(end_tag) {
+        Option::Some(end) => {
+          let before = source.unsafe_substring(start=0, end=start)
+          let after_start = end + end_tag.length()
+          let after = source.unsafe_substring(
+            start=after_start,
+            end=source.length(),
+          )
+          before + after
+        }
+        Option::None => source
       }
-      Option::None => source
-    }
     Option::None => source
   }
 }
@@ -85,6 +94,7 @@ fn remove_style_block(source : String) -> String {
 /// All error positions reported by the parser are relative to the full
 /// `source` string, so line/column calculations are correct without any
 /// offset arithmetic.
+
 ///|
 /// Convert a character offset into a 1-based line and column for display.
 fn offset_to_line_col(source : String, offset : Int) -> SourcePos {
@@ -105,7 +115,13 @@ fn offset_to_line_col(source : String, offset : Int) -> SourcePos {
 
 ///|
 /// Record a parse diagnostic at a given source span.
-fn record(diags : Array[Diagnostic], code : String, message : String, start : Int, end : Int) -> Unit {
+fn record(
+  diags : Array[Diagnostic],
+  code : String,
+  message : String,
+  start : Int,
+  end : Int,
+) -> Unit {
   diags.push({ code, message, start, end })
 }
 
@@ -207,7 +223,7 @@ fn extract_style(source : String) -> String {
       // body_start points to the first character after "<style>"
       let body_start = start + start_tag.length()
       match source.find(end_tag) {
-        Option::Some(end) => source.unsafe_substring(start=body_start, end=end)
+        Option::Some(end) => source.unsafe_substring(start=body_start, end~)
         Option::None => ""
       }
     }
@@ -228,27 +244,28 @@ fn extract_style(source : String) -> String {
 /// Returns `""` if the `<script>` tag, the attribute, or the closing quote are missing.
 fn extract_script_imports(source : String) -> String {
   match source.find("<script") {
-    Option::Some(start) => match source.find(">") {
-      Option::Some(gt) => {
-        // The complete opening tag, e.g. "<script lang=\"moonbit\">"
-        let tag = source.unsafe_substring(start=start, end=gt + 1)
-        match tag.find("import=\"") {
-          Option::Some(im) => {
-            // val_start = position right after import="
-            let val_start = im + "import=\"".length()
-            let rest = tag.unsafe_substring(start=val_start, end=tag.length())
-            match rest.find("\"") {
-              Option::Some(ve) =>
-                // Everything from val_start to the closing double-quote
-                rest.unsafe_substring(start=0, end=ve)
-              Option::None => ""
+    Option::Some(start) =>
+      match source.find(">") {
+        Option::Some(gt) => {
+          // The complete opening tag, e.g. "<script lang=\"moonbit\">"
+          let tag = source.unsafe_substring(start~, end=gt + 1)
+          match tag.find("import=\"") {
+            Option::Some(im) => {
+              // val_start = position right after import="
+              let val_start = im + "import=\"".length()
+              let rest = tag.unsafe_substring(start=val_start, end=tag.length())
+              match rest.find("\"") {
+                Option::Some(ve) =>
+                  // Everything from val_start to the closing double-quote
+                  rest.unsafe_substring(start=0, end=ve)
+                Option::None => ""
+              }
             }
+            Option::None => ""
           }
-          Option::None => ""
         }
+        Option::None => ""
       }
-      Option::None => ""
-    }
     Option::None => ""
   }
 }
@@ -367,7 +384,13 @@ fn read_word(s : String, i : Int, end : Int) -> (String, Int) {
 ///
 /// The returned `Array` may contain interleaved `Element` and `Text` nodes in
 /// source order.
-fn parse_nodes(html : String, pos : Int, end : Int, diags : Array[Diagnostic]) -> Array[HtmlNode] {
+fn parse_nodes(
+  html : String,
+  pos : Int,
+  end : Int,
+  diags : Array[Diagnostic],
+  child_end : Ref[Int],
+) -> Array[HtmlNode] {
   let nodes = Array::new(capacity=8)
   let mut i = pos
   while i < end {
@@ -379,13 +402,19 @@ fn parse_nodes(html : String, pos : Int, end : Int, diags : Array[Diagnostic]) -
     // '<' — start of a tag (element, closing tag, or comment)
     if ch == 60 {
       // Check for HTML comment "<!--"
-      if i + 3 < end && char_at(html, i + 1) == 33 && char_at(html, i + 2) == 45 && char_at(html, i + 3) == 45 {
-        i = i + 4  // skip past "<!--"
+      if i + 3 < end &&
+        char_at(html, i + 1) == 33 &&
+        char_at(html, i + 2) == 45 &&
+        char_at(html, i + 3) == 45 {
+        i = i + 4 // skip past "<!--"
         // Scan forward until "-->" is found
-        while i + 2 < end && !(char_at(html, i) == 45 && char_at(html, i + 1) == 45 && char_at(html, i + 2) == 62) {
+        while i + 2 < end &&
+              !(char_at(html, i) == 45 &&
+              char_at(html, i + 1) == 45 &&
+              char_at(html, i + 2) == 62) {
           i = i + 1
         }
-        i = i + 3  // skip past "-->"
+        i = i + 3 // skip past "-->"
         continue
       }
       // "</" — a closing tag; this means we have reached the end of the parent's
@@ -401,12 +430,33 @@ fn parse_nodes(html : String, pos : Int, end : Int, diags : Array[Diagnostic]) -
           continue
         }
         // Couldn't parse — skip this character to avoid an infinite loop
-        Option::None => {
-          i = i + 1
+        Option::None => i = i + 1
+      }
+    } else if ch == 123 && i + 1 < end && char_at(html, i + 1) == 35 {
+      // "{#" — control-flow block (if, for)
+      if i + 5 < end && html.unsafe_substring(start=i, end=i + 5) == "{#if " {
+        match parse_if_block(html, i, end, diags) {
+          Option::Some((block, next)) => {
+            nodes.push(HtmlNode::If(block))
+            i = next
+            continue
+          }
+          Option::None => i = i + 1
         }
+      } else if i + 5 < end && html.unsafe_substring(start=i, end=i + 5) == "{#for" {
+        match parse_for_block(html, i, end, diags) {
+          Option::Some((block, next)) => {
+            nodes.push(HtmlNode::For(block))
+            i = next
+            continue
+          }
+          Option::None => i = i + 1
+        }
+      } else {
+        i = i + 1
       }
     } else {
-      // Not a tag — must be text content (possibly with {expr} interpolation)
+      // Not a tag or control block — must be text content
       match parse_text(html, i, end, diags) {
         Option::Some((parts, next)) => {
           for j in 0..<parts.length() {
@@ -415,12 +465,12 @@ fn parse_nodes(html : String, pos : Int, end : Int, diags : Array[Diagnostic]) -
           i = next
           continue
         }
-        // Couldn't parse — skip this character to avoid an infinite loop
         Option::None => i = i + 1
       }
     }
     i = i + 1
   }
+  child_end.val = i
   nodes
 }
 
@@ -468,7 +518,12 @@ fn parse_nodes(html : String, pos : Int, end : Int, diags : Array[Diagnostic]) -
 ///    guarantee the first match is the correct closing tag for this element.
 ///
 /// 3. Return the `ElementNode` and the position right after the closing tag.
-fn parse_element(html : String, pos : Int, end : Int, diags : Array[Diagnostic]) -> (ElementNode, Int)? {
+fn parse_element(
+  html : String,
+  pos : Int,
+  end : Int,
+  diags : Array[Diagnostic],
+) -> (ElementNode, Int)? {
   // Move past the opening '<' and skip any whitespace before the tag name
   let mut i = pos + 1
   i = skip_ws(html, i, end)
@@ -492,8 +547,8 @@ fn parse_element(html : String, pos : Int, end : Int, diags : Array[Diagnostic])
     let ch = char_at(html, i)
     // '>' — end of opening tag; the element has children
     if ch == 62 {
-      i = i + 1       // move past '>'
-      parsing = false  // exit attribute loop
+      i = i + 1 // move past '>'
+      parsing = false // exit attribute loop
       continue
     }
     // '/>' — self-closing tag; return immediately with no children
@@ -505,18 +560,18 @@ fn parse_element(html : String, pos : Int, end : Int, diags : Array[Diagnostic])
     i = after_name
     // Check for '=' indicating this attribute has a value
     if char_at(html, i) == 61 {
-      i = i + 1  // consume '='
+      i = i + 1 // consume '='
       let q = char_at(html, i)
       // Quoted value (double or single quotes)
       if q == 34 || q == 39 {
-        i = i + 1  // skip opening quote
-        let vs = i  // value start
+        i = i + 1 // skip opening quote
+        let vs = i // value start
         // Scan until the matching closing quote
         while i < end && char_at(html, i) != q {
           i = i + 1
         }
         let val = html.unsafe_substring(start=vs, end=i)
-        i = i + 1  // skip closing quote
+        i = i + 1 // skip closing quote
         // Attribute names starting with "on" (e.g. onclick, oninput) are
         // treated as event handlers → Attribute::Event
         if name.length() > 2 && name.unsafe_substring(start=0, end=2) == "on" {
@@ -527,30 +582,31 @@ fn parse_element(html : String, pos : Int, end : Int, diags : Array[Diagnostic])
         }
       } else if q == 123 {
         // Brace-delimited expression value: e.g. attr={someExpr}
-        i = i + 1  // skip opening '{'
-        let vs = i  // value start
-        let mut d = 1  // brace-depth counter (handles nested {...})
+        i = i + 1 // skip opening '{'
+        let vs = i // value start
+        let mut d = 1 // brace-depth counter (handles nested {...})
         while i < end && d > 0 {
           let c = char_at(html, i)
           if c == 123 {
-            d = d + 1   // enter nested brace
+            d = d + 1 // enter nested brace
           } else if c == 125 {
-            d = d - 1   // exit a brace level
+            d = d - 1 // exit a brace level
             if d == 0 {
-              break      // found the matching '}', stop
+              break // found the matching '}', stop
             }
           }
           i = i + 1
         }
         let val = html.unsafe_substring(start=vs, end=i)
-        i = i + 1  // skip closing '}'
+        i = i + 1 // skip closing '}'
         // If name starts with "on", it's an event binding with a braced handler
         if name.length() > 2 && name.unsafe_substring(start=0, end=2) == "on" {
           let ev_name = name.unsafe_substring(start=2, end=name.length())
           attrs.push(Attribute::Event(ev_name, val))
         } else {
-          // Otherwise it's a dynamic attribute binding
-          attrs.push(Attribute::Bind(name, val))
+          // Strip "bind:" prefix for bind attributes
+          let bind_name = if name.has_prefix("bind:") { name.unsafe_substring(start="bind:".length(), end=name.length()) } else { name }
+          attrs.push(Attribute::Bind(bind_name, val))
         }
       }
     } else {
@@ -561,7 +617,8 @@ fn parse_element(html : String, pos : Int, end : Int, diags : Array[Diagnostic])
   }
 
   // Phase 3: recursively parse child nodes
-  let children = parse_nodes(html, i, end, diags)
+  let child_end = Ref(i)
+  let children = parse_nodes(html, i, end, diags, child_end)
 
   // Construct the expected closing tag, e.g. "</div>"
   let close_tag = "</" + tag + ">"
@@ -573,11 +630,17 @@ fn parse_element(html : String, pos : Int, end : Int, diags : Array[Diagnostic])
   // limiting the search to `rest` (the unparsed remainder), `find` returns the
   // **first** occurrence after the children, which is exactly the correct closing
   // tag for this element.
-  let rest = html.unsafe_substring(start=i, end=end)
+  let rest = html.unsafe_substring(start=child_end.val, end~)
   let close_end = match rest.find(close_tag) {
-    Option::Some(ct) => i + ct + close_tag.length()
+    Option::Some(ct) => child_end.val + ct + close_tag.length()
     Option::None => {
-      record(diags, "unclosed-tag", "<" + tag + "> has no matching closing tag </" + tag + ">", pos, end)
+      record(
+        diags,
+        "unclosed-tag",
+        "<" + tag + "> has no matching closing tag </" + tag + ">",
+        pos,
+        end,
+      )
       end
     }
   }
@@ -608,10 +671,15 @@ fn parse_element(html : String, pos : Int, end : Int, diags : Array[Diagnostic])
 ///
 /// The function returns the `Array[TextChunk]` and the position where parsing
 /// stopped (at the `<` of the next tag, or at `end`).
-fn parse_text(html : String, pos : Int, end : Int, diags : Array[Diagnostic]) -> (Array[TextChunk], Int)? {
+fn parse_text(
+  html : String,
+  pos : Int,
+  end : Int,
+  diags : Array[Diagnostic],
+) -> (Array[TextChunk], Int)? {
   let parts = Array::new(capacity=4)
   let mut i = pos
-  let mut ts = i  // ts = text-start: beginning of the current static text segment
+  let mut ts = i // ts = text-start: beginning of the current static text segment
   while i < end {
     let ch = char_at(html, i)
     // '<' — start of an element tag; text node ends here
@@ -629,9 +697,9 @@ fn parse_text(html : String, pos : Int, end : Int, diags : Array[Diagnostic]) ->
         }
       }
       let brace_start = i
-      i = i + 1  // skip '{'
-      let es = i  // expression start
-      let mut d = 1  // brace-depth counter for nested {…}
+      i = i + 1 // skip '{'
+      let es = i // expression start
+      let mut d = 1 // brace-depth counter for nested {…}
       while i < end && d > 0 {
         let c = char_at(html, i)
         if c == 123 {
@@ -639,21 +707,24 @@ fn parse_text(html : String, pos : Int, end : Int, diags : Array[Diagnostic]) ->
         } else if c == 125 {
           d = d - 1
           if d == 0 {
-            break  // matched the outer '{', stop
+            break // matched the outer '{', stop
           }
         }
         i = i + 1
       }
       if d > 0 {
-        record(diags, "unclosed-brace", "Unclosed `{` in template expression — missing `}`", brace_start, i)
+        record(
+          diags, "unclosed-brace", "Unclosed `{` in template expression — missing `}`",
+          brace_start, i,
+        )
       }
       let raw_expr = html.unsafe_substring(start=es, end=i)
       let expr = raw_expr.trim().to_owned()
       if expr.length() > 0 {
         parts.push(TextChunk::Expr(expr))
       }
-      i = i + 1  // skip '}'
-      ts = i     // reset text-start to after the expression
+      i = i + 1 // skip '}'
+      ts = i // reset text-start to after the expression
     } else {
       // Ordinary text character — keep accumulating
       i = i + 1
@@ -673,4 +744,252 @@ fn parse_text(html : String, pos : Int, end : Int, diags : Array[Diagnostic]) ->
   } else {
     Option::Some((parts, i))
   }
+}
+
+///|
+/// Parse a Svelte-style {#if}…{/if} control-flow block.
+///
+/// # Syntax
+/// ```svon
+/// {#if condition}
+///   <p>rendered when true</p>
+/// {:else if other}
+///   <p>else-if branch</p>
+/// {:else}
+///   <p>fallthrough</p>
+/// {/if}
+/// ```
+fn parse_if_block(
+  html : String,
+  pos : Int,
+  end : Int,
+  diags : Array[Diagnostic],
+) -> (IfBlock, Int)? {
+  if pos + 5 >= end {
+    return Option::None
+  }
+  if html.unsafe_substring(start=pos, end=pos + 5) != "{#if " {
+    return Option::None
+  }
+  let mut i = pos + 5
+  let cond_start = i
+  let mut d = 1
+  while i < end && d > 0 {
+    if html[i] == 123 {
+      d = d + 1
+    } else if html[i] == 125 {
+      d = d - 1
+    }
+    if d == 0 {
+      break
+    }
+    i = i + 1
+  }
+  if d > 0 {
+    record(
+      diags,
+      "unclosed-if",
+      "Unclosed {#if ...} — missing } at " + pos.to_string(),
+      pos,
+      i,
+    )
+    return Option::None
+  }
+  let condition = html
+    .unsafe_substring(start=cond_start, end=i)
+    .trim()
+    .to_owned()
+  i = i + 1 // skip "}"
+  let body_start = i
+
+  // Scan forward to find the matching {/if}, collecting {:else}/{:else if} positions
+  let mut body_end = end
+  let mut end_tag_pos = end // position of {/if}
+  let elif_conds = Array::new(capacity=4)
+  let elif_starts = Array::new(capacity=4)
+  let mut else_start = -1
+  let mut else_marker = -1 // position of {:else} for prev segment end
+  let mut depth = 1
+  let mut scan = body_start
+  let mut first_else = false
+
+  while scan < end {
+    if html[scan] == 123 {
+      if scan + 1 < end && html[scan + 1] == 35 {
+        depth = depth + 1
+      } else if scan + 1 < end && html[scan + 1] == 47 {
+        let j = scan + 2
+        let mut tag_end = j
+        while tag_end < end &&
+              html[tag_end] != 125 &&
+              html[tag_end] != 32 &&
+              html[tag_end] != 13 &&
+              html[tag_end] != 10 {
+          tag_end = tag_end + 1
+        }
+        if html.unsafe_substring(start=j, end=tag_end) == "if" {
+          depth = depth - 1
+          if depth == 0 {
+            if !first_else {
+              body_end = scan
+            }
+            end_tag_pos = scan
+            i = tag_end
+            while i < end && html[i] != 125 {
+              i = i + 1
+            }
+            if i < end {
+              i = i + 1
+            }
+            break
+          }
+        }
+      } else if scan + 1 < end && html[scan + 1] == 58 {
+        if depth == 1 {
+          let j = scan + 2
+          let mut tag_end = j
+          while tag_end < end &&
+                html[tag_end] != 125 &&
+                html[tag_end] != 32 &&
+                html[tag_end] != 13 &&
+                html[tag_end] != 10 {
+            tag_end = tag_end + 1
+          }
+          if html.unsafe_substring(start=j, end=tag_end) == "else" {
+            if !first_else {
+              body_end = scan // body ends at first {:else}
+              first_else = true
+            }
+            let mut marker_end = tag_end
+            if marker_end < end && html[marker_end] == 32 {
+              marker_end = marker_end + 1
+              if marker_end + 1 < end &&
+                html.unsafe_substring(start=marker_end, end=marker_end + 2) ==
+                "if" {
+                marker_end = marker_end + 2
+                if marker_end < end && html[marker_end] == 32 {
+                  marker_end = marker_end + 1
+                }
+                let ec_start = marker_end
+                let mut ed = 1
+                let mut k = ec_start
+                while k < end && ed > 0 {
+                  if html[k] == 123 {
+                    ed = ed + 1
+                  } else if html[k] == 125 {
+                    ed = ed - 1
+                  }
+                  if ed == 0 {
+                    break
+                  }
+                  k = k + 1
+                }
+                if ed == 0 {
+                  elif_conds.push(
+                    html
+                    .unsafe_substring(start=ec_start, end=k)
+                    .trim()
+                    .to_owned(),
+                  )
+                  elif_starts.push(k + 1)
+                }
+              }
+            } else {
+              else_marker = scan
+              else_start = tag_end
+              let mut k = else_start
+              while k < end && html[k] != 125 {
+                k = k + 1
+              }
+              else_start = k + 1
+            }
+          }
+        }
+      }
+    }
+    scan = scan + 1
+  }
+
+  // Parse body content
+  let body = parse_nodes(html, body_start, body_end, diags, Ref(0))
+
+  // Parse else-if branches
+  let range = elif_conds.length()
+  let else_ifs = Array::new(capacity=range)
+  for ei in 0..<range {
+    let ecs = elif_starts[ei]
+    let ece = if ei + 1 < range {
+      elif_starts[ei + 1]
+    } else if else_marker >= 0 {
+      else_marker
+    } else {
+      end_tag_pos
+    }
+    let ef_body = parse_nodes(html, ecs, ece, diags, Ref(0))
+    let ef = { condition: elif_conds[ei], body: ef_body }
+    else_ifs.push(ef)
+  }
+
+  // Parse else body
+  let else_body = if else_start >= 0 {
+    parse_nodes(html, else_start, end_tag_pos, diags, Ref(0))
+  } else {
+    let empty = Array::new(capacity=0)
+    empty
+  }
+
+  Option::Some(({ condition, body, else_ifs, else_body }, i))
+}
+
+///|
+/// Parse a {#for expr}…{/for} iteration block.
+fn parse_for_block(html : String, pos : Int, end : Int, diags : Array[Diagnostic]) -> (ForBlock, Int)? {
+  if pos + 5 >= end { return Option::None }
+  if html.unsafe_substring(start=pos, end=pos + 5) != "{#for" { return Option::None }
+  // Skip whitespace after "for"
+  let mut i = pos + 5
+  while i < end && html[i] == 32 { i = i + 1 }
+  // Parse expression until "}"
+  let expr_start = i
+  let mut d = 1
+  while i < end && d > 0 {
+    if html[i] == 123 { d = d + 1 } else if html[i] == 125 { d = d - 1 }
+    if d == 0 { break }
+    i = i + 1
+  }
+  if d > 0 {
+    record(diags, "unclosed-for", "Unclosed {#for ...} — missing }", pos, i)
+    return Option::None
+  }
+  let for_expr = html.unsafe_substring(start=expr_start, end=i).trim().to_owned()
+  i = i + 1  // skip "}"
+  let body_start = i
+
+  // Find matching {/for}
+  let mut depth = 1
+  let mut scan = body_start
+  while scan < end {
+    if html[scan] == 123 {
+      if scan + 1 < end && html[scan + 1] == 35 { depth = depth + 1 }
+      else if scan + 1 < end && html[scan + 1] == 47 {
+        let j = scan + 2
+        let mut tag_end = j
+        while tag_end < end && html[tag_end] != 125 && html[tag_end] != 32 && html[tag_end] != 13 && html[tag_end] != 10 { tag_end = tag_end + 1 }
+        if html.unsafe_substring(start=j, end=tag_end) == "for" {
+          depth = depth - 1
+          if depth == 0 {
+            let body_end = scan
+            i = tag_end
+            while i < end && html[i] != 125 { i = i + 1 }
+            if i < end { i = i + 1 }
+            let body = parse_nodes(html, body_start, body_end, diags, Ref(0))
+            return Option::Some(({ for_expr, body }, i))
+          }
+        }
+      }
+    }
+    scan = scan + 1
+  }
+  record(diags, "unclosed-for", "Unclosed {#for} — missing {/for}", pos, scan)
+  Option::None
 }

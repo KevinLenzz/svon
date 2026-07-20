@@ -134,17 +134,28 @@ function moonBitCheck(
 // ---------------- Project scaffolding ----------------
 
 let projectReady = false;
-function ensureProject(projectDir: string, _wsRoot: string) {
-  if (projectReady && fs.existsSync(path.join(projectDir, "deps", "svon", "types.mbt"))) return;
+function ensureProject(projectDir: string, wsRoot: string) {
+  if (projectReady && fs.existsSync(path.join(projectDir, "deps", "svon", "console.mbt"))) return;
 
   fs.mkdirSync(projectDir, { recursive: true });
-  log("Initializing project cache at " + projectDir);
+  const oldMod = path.join(projectDir, "moon.mod.json");
+  if (fs.existsSync(oldMod)) fs.unlinkSync(oldMod);
+
+  let modName = "svon-check";
+  const parentMod = path.join(wsRoot, "moon.mod");
+  if (fs.existsSync(parentMod)) {
+    const m = fs.readFileSync(parentMod, "utf-8").match(/"local\/([^"]+)"/);
+    if (m) modName = m[1];
+  }
+
+  log("Initializing project cache at " + projectDir + " (module: " + modName + ")");
   cp.execSync(`${svoncPath} init ${projectDir}`, { encoding: "utf-8" });
+  fs.writeFileSync(path.join(projectDir, "moon.mod"), `name = "local/${modName}"\nversion = "0.1.0"\npreferred_target = "js"\n`);
 
   const genDir = path.join(projectDir, "gen");
   fs.mkdirSync(genDir, { recursive: true });
   fs.writeFileSync(path.join(genDir, "moon.pkg"),
-    'import { "local/svonpages/deps/svon" @svon, }\nsupported_targets = "js"\noptions("is-main": true)\n');
+    `import { "local/${modName}/deps/svon" @svon, }\nsupported_targets = "js"\noptions("is-main": true)\n`);
 
   projectReady = true;
 }
@@ -245,6 +256,7 @@ function validateDocument(document: vscode.TextDocument): vscode.Diagnostic[] {
     });
   }
   checkUnclosedBrace(text.replace(/<script[\s\S]*?<\/script>/g, ""), document, diags);
+  checkControlFlow(text, document, diags);
   return diags;
 }
 
@@ -300,6 +312,62 @@ function checkUnclosedBrace(html: string, document: vscode.TextDocument, diags: 
   }
 }
 
+function checkControlFlow(text: string, document: vscode.TextDocument, diags: vscode.Diagnostic[]) {
+  const html = text.replace(/<script[\s\S]*?<\/script>/g, (m) => " ".repeat(m.length));
+  const stack: number[] = [];
+  const re = /\{\s*(#\s*if\b|\:\s*else(\s+if\b)?|\/\s*if\b)\s*([^}]*)\s*\}/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(html)) !== null) {
+    const kind = m[1].trim().replace(/\s+/g, "");
+    const pos = m.index;
+    const full = m[0];
+    if (kind === "#if" || kind.startsWith("#if")) {
+      stack.push(pos);
+    } else if (kind === "/if" || kind.startsWith("/if")) {
+      if (stack.length === 0) {
+        const p = document.positionAt(pos);
+        diags.push({
+          severity: vscode.DiagnosticSeverity.Error,
+          range: new vscode.Range(p, p.translate(0, full.length)),
+          message: "{/if} without matching {#if}",
+          source: DIAG_SOURCE,
+        });
+      } else {
+        stack.pop();
+      }
+    } else if (kind.startsWith(":elseif")) {
+      if (stack.length === 0) {
+        const p = document.positionAt(pos);
+        diags.push({
+          severity: vscode.DiagnosticSeverity.Error,
+          range: new vscode.Range(p, p.translate(0, full.length)),
+          message: "{:else if} without matching {#if}",
+          source: DIAG_SOURCE,
+        });
+      }
+    } else if (kind === ":else") {
+      if (stack.length === 0) {
+        const p = document.positionAt(pos);
+        diags.push({
+          severity: vscode.DiagnosticSeverity.Error,
+          range: new vscode.Range(p, p.translate(0, full.length)),
+          message: "{:else} without matching {#if}",
+          source: DIAG_SOURCE,
+        });
+      }
+    }
+  }
+  for (const pos of stack) {
+    const p = document.positionAt(pos);
+    diags.push({
+      severity: vscode.DiagnosticSeverity.Error,
+      range: new vscode.Range(p, p.translate(0, 5)),
+      message: "Unclosed {#if} — missing {/if}",
+      source: DIAG_SOURCE,
+    });
+  }
+}
+
 // ---------------- completion / hover (unchanged) ----------------
 
 function isInsideScript(document: vscode.TextDocument, position: vscode.Position): boolean {
@@ -331,6 +399,9 @@ class SvonCompletionProvider implements vscode.CompletionItemProvider {
       ci("read_derived", "read_derived(d)", "Read Derived with lazy compute"),
       ci("untrack", "untrack(fn() { ... })", "Suppress dependency tracking"),
       ci("Option::None", "Option::None", "No cleanup (effect return)"),
+      ci("{#if", "{#if condition}\\n  ...\\n{/if}", "Conditional block — reactive"),
+      ci("{:else}", "{:else}", "Else branch for control flow block"),
+      ci("{/if}", "{/if}", "Close {#if} block"),
     ];
   }
 }
