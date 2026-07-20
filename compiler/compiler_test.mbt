@@ -109,3 +109,40 @@ test "generate style injection" {
   inspect(code.contains("document_head"), content="true")
   inspect(code.contains("color: red"), content="true")
 }
+
+test "diagnostic on unclosed tag" {
+  let src = "<div><p>hello</div>"
+  let tmpl = @compiler.parse(src)
+  inspect(tmpl.diagnostics.length(), content="1")
+  inspect(tmpl.diagnostics[0].code, content="unclosed-tag")
+  inspect(tmpl.diagnostics[0].message.contains("<p>"), content="true")
+}
+
+test "diagnostic on unclosed brace" {
+  let src = "<p>{count</p>"
+  let tmpl = @compiler.parse(src)
+  inspect(tmpl.diagnostics.length(), content="1")
+  inspect(tmpl.diagnostics[0].code, content="unclosed-brace")
+}
+
+test "diagnostic on empty tag name" {
+  let src = "<></>"
+  let tmpl = @compiler.parse(src)
+  inspect(tmpl.diagnostics.length(), content="1")
+  inspect(tmpl.diagnostics[0].code, content="empty-tag-name")
+}
+
+test "compile emits errors as comments" {
+  let src = "<div><p>hello</div>"
+  let code = @compiler.compile(src)
+  inspect(code.contains("Svon compilation failed"), content="true")
+  inspect(code.contains("unclosed-tag"), content="true")
+  inspect(code.contains("_svon_compile_error"), content="true")
+}
+
+test "no diagnostics on valid template" {
+  let src = tpl("let x = state(0)", "<div><p>ok</p></div>")
+  let tmpl = @compiler.parse(src)
+  inspect(tmpl.diagnostics.length(), content="0")
+  inspect(tmpl.nodes.length(), content="1")
+}

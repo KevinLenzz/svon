@@ -1,53 +1,152 @@
-# Project Agents.md Guide
+# Svon Coding Agent Guide
 
-This is a [MoonBit](https://docs.moonbitlang.com) project.
+Build, test, and development conventions for the Svon reactive MoonBit template framework.
 
-You can browse and install extra skills here:
-<https://github.com/moonbitlang/skills>
+## Quick Reference
 
-## Project Structure
+- **moon CLI** is aliased as `mbt` on this machine: `/home/kevinlenz/.moon/bin/moon`
+- Always run `mbt check` after edits; run `mbt test` before considering work done
+- `.svon` templates compile to `main.mbt` via `svonc` (npm package at `cli/`)
+- Generated apps live under `out/` (`.gitignore`'d) and `cmd/` (hand-written)
 
-- MoonBit packages are organized per directory; each directory contains a
-  `moon.pkg` file listing its dependencies. Each package has its files and
-  blackbox test files (ending in `_test.mbt`) and whitebox test files (ending in
-  `_wbtest.mbt`).
+## Project Layout
 
-- In the toplevel directory, there is a `moon.mod` file listing module
-  metadata.
+```
+svon/
+├── moon.mod / moon.pkg        # Module config
+├── runtime.mbt                # Reactive engine (signal graph, dirtiness, batching)
+├── types.mbt                  # Reaction struct + bit flag constants
+├── signal.mbt                 # Source / Derived / Effect structs
+├── state.mbt                  # State[T] wrapper (.get / .set)
+├── dom.mbt                    # DOM FFI bindings (extern "js", js target only)
+├── svon.mbt                   # Public API facade
+├── svon_test.mbt              # Black-box reactivity tests (8 tests)
+│
+├── compiler/                  # Template compiler (independent package)
+│   ├── moon.pkg               # Empty — no deps on svon runtime
+│   ├── types.mbt              # AST: Template, HtmlNode, TextChunk, Attribute
+│   ├── parser.mbt             # .svon string → AST
+│   ├── codegen.mbt            # AST → MoonBit source string
+│   ├── compiler.mbt           # Public: compile(), generate_project(), build_dir()
+│   └── compiler_test.mbt      # Black-box compiler tests (11 tests)
+│
+├── cmd/
+│   ├── compile/               # svonc CLI (npm package, extern "js" for Node fs)
+│   │   └── main.mbt
+│   └── pages/                 # Hand-written multi-page demo (SPA)
+│
+├── examples/                  # .svon template source files
+│   ├── counter.svon
+│   ├── hello.svon
+│   ├── deepdom.svon
+│   └── test_suite.svon
+│
+├── cli/                       # npm package for `svonc` command
+│   ├── package.json
+│   ├── svonc                  # Node.js launcher (#!/usr/bin/env node)
+│   └── svonc.js               # Compiled MoonBit CLI (copied from _build)
+│
+├── vscode-extension/          # VS Code language support
+│   ├── syntaxes/              # TextMate grammars
+│   ├── src/extension.ts       # Diagnostics, completion, hover
+│   └── icon.png               # Purple Svelte-style icon
+│
+└── out/                       # Compiler output (.gitignore'd)
+```
 
-## Coding convention
+## Build and Test Commands
 
-- MoonBit code is organized in block style, each block is separated by `///|`,
-  the order of each block is irrelevant. In some refactorings, you can process
-  block by block independently.
+```bash
+# Type check entire project
+mbt check                        # 0 errors required
 
-- Try to keep deprecated blocks in file called `deprecated.mbt` in each
-  directory.
+# Run all tests (19 total)
+mbt test                         # must pass 19/19
+mbt test -v                      # verbose output
 
-## Tooling
+# Build CLI compiler
+mbt build cmd/compile --target js
+cp _build/js/debug/build/cmd/compile/compile.js cli/svonc.js
+cd cli && npm link               # install svonc globally
 
-- `moon fmt` is used to format your code properly.
+# Build individual app from .svon
+svonc examples/counter.svon > out/counter/main.mbt
+cat > out/counter/moon.pkg << 'PKG'
+import { "username/svon" @svon, }
+supported_targets = "js"
+options("is-main": true)
+PKG
+mbt build out/counter --target js
+```
 
-- `moon ide` provides project navigation helpers like `peek-def`, `outline`, and
-  `find-references`. See $moonbit-agent-guide for details.
+## Key Conventions
 
-- `moon info` is used to update the generated interface of the package, each
-  package has a generated interface file `.mbti`, it is a brief formal
-  description of the package. If nothing in `.mbti` changes, this means your
-  change does not bring the visible changes to the external package users, it is
-  typically a safe refactoring.
+### Visibility
+- **`pub fn`** — public API (in `svon.mbt`, `state.mbt`, `dom.mbt`)
+- **`fn` (package-private)** — internal implementation (all of `runtime.mbt`)
+- **`pub(all) struct`** — types accessible to sibling packages (all signal types, Reaction)
 
-- In the last step, run `moon info && moon fmt` to update the interface and
-  format the code. Check the diffs of `.mbti` file to see if the changes are
-  expected.
+### Architecture Rules
+- **`compiler/` must NOT depend on `runtime.mbt`** — the compiler takes `.svon` strings and produces `.mbt` strings; it does not need the reactive runtime
+- **`cmd/compile` depends on `compiler/` only** — the CLI is a thin wrapper around `@compiler.compile()`
+- **Generated apps (`out/*`, `cmd/pages`) depend on `@svon`** — they import the runtime facade
+- **DOM functions are `extern "js"`** — available only on `js` target; native target sees empty stubs
 
-- Run `moon test` to check tests pass. MoonBit supports snapshot testing; when
-  changes affect outputs, run `moon test --update` to refresh snapshots.
+### Template format (.svon)
+- First block: `<script lang="moonbit">...</script>` — reactive state definitions
+- Optional: `<style>...</style>` — CSS injected into `<head>`
+- HTML body: standard HTML with `{expr}` MoonBit interpolation and `onclick={fn}` event handlers
 
-- Prefer `assert_eq` or `assert_true(pattern is Pattern(...))` for results that
-  are stable or very unlikely to change. For snapshot tests that record
-  structured debugging output, derive `Debug` and use `debug_inspect`, rather
-  than deriving `Show` for debugging. For solid, well-defined results (e.g.
-  scientific computations), prefer assertion tests. You can use
-  `moon coverage analyze > uncovered.log` to see which parts of your code are
-  not covered by tests.
+### Codegen output format
+```moonbit
+/// Generated by Svon compiler
+fn main {
+  // script block (state() → @svon.state(), derived() → @svon.derived())
+  // style block → document_create_element("style") + document_head
+  // HTML → document_create_element("tag"), node_append_child, etc.
+  // {expr} → @svon.effect(fn() { node_set_text_content(node, expr.to_string()); Option::None })
+  // onclick={fn} → node_add_event_listener(el, "click", fn)
+}
+```
+
+## Common Tasks
+
+### Add a new reactive feature
+1. Add data structures to `types.mbt` / `signal.mbt`
+2. Implement logic in `runtime.mbt` (package-private)
+3. Expose through `svon.mbt` (public API)
+4. Add black-box test in `svon_test.mbt`
+5. Run `mbt check && mbt test`
+
+### Add a new .svon template feature
+1. Update AST types in `compiler/types.mbt`
+2. Implement parsing in `compiler/parser.mbt`
+3. Generate code in `compiler/codegen.mbt`
+4. Add test in `compiler/compiler_test.mbt`
+5. Run `mbt check && mbt test`
+
+### Update the CLI
+1. Edit `cmd/compile/main.mbt`
+2. `mbt build cmd/compile --target js`
+3. `cp _build/js/debug/build/cmd/compile/compile.js cli/svonc.js`
+4. `cd cli && npm link`
+5. Test: `svonc --help`
+
+### Update the npm package
+```bash
+cd cli
+cp ../_build/js/debug/build/cmd/compile/compile.js svonc.js
+npm link   # install globally for testing
+```
+
+## Dependencies
+
+- `username/svon` — the root package (self-imported by `cmd/` and `out/` packages)
+- `@compiler` — the compiler package (imported by `cmd/compile`)
+- No external MoonBit dependencies; uses only `moonbitlang/core`
+
+## Known Limitations
+
+- **Local path dependencies**: MoonBit does not support `--path` or relative imports; `svonpages` builds by copying into the svon module's `cmd/` directory
+- **Multi-page merge**: Each `.svon` compiles to a standalone `fn main {}`. Multi-page sites use separate HTML pages with `<a>` navigation, not client-side routing
+- **JS target only**: DOM bindings use `extern "js"`; native target has no DOM support

@@ -42,6 +42,12 @@ function _M0TPB8MutLocalGORPC16string10StringViewE(param0) {
 function _M0TPC13ref3RefGiE(param0) {
   this.val = param0;
 }
+function _M0TP38username4svon8compiler10Diagnostic(param0, param1, param2, param3) {
+  this.code = param0;
+  this.message = param1;
+  this.start = param2;
+  this.end = param3;
+}
 function _M0DTP38username4svon8compiler9TextChunk6Static(param0) {
   this._0 = param0;
 }
@@ -81,11 +87,16 @@ function _M0DTP38username4svon8compiler9Attribute4Bind(param0, param1) {
   this._1 = param1;
 }
 _M0DTP38username4svon8compiler9Attribute4Bind.prototype.$tag = 2;
-function _M0TP38username4svon8compiler8Template(param0, param1, param2, param3) {
+function _M0TP38username4svon8compiler8Template(param0, param1, param2, param3, param4) {
   this.script = param0;
   this.styles = param1;
   this.imports = param2;
   this.nodes = param3;
+  this.diagnostics = param4;
+}
+function _M0TP38username4svon8compiler9SourcePos(param0, param1) {
+  this.line = param0;
+  this.column = param1;
 }
 function _M0TPB8MutLocalGsE(param0) {
   this.val = param0;
@@ -94,6 +105,9 @@ const _M0FP48username4svon3cmd7compile10read__file = (path) => require("fs").rea
 const _M0FP48username4svon3cmd7compile11write__file = (path, content) => require("fs").writeFileSync(path, content);
 const _M0FP48username4svon3cmd7compile5mkdir = (path) => require("fs").mkdirSync(path, { recursive: true });
 const _M0FP48username4svon3cmd7compile9get__args = () => process.argv.slice(2);
+const _M0FP48username4svon3cmd7compile13write__stderr = (msg) => process.stderr.write(msg);
+const _M0FP48username4svon3cmd7compile4exit = (code) => process.exit(code);
+const _M0FP48username4svon3cmd7compile8cli__dir = () => __dirname;
 const _M0FP092moonbitlang_2fcore_2fbuiltin_2fStringBuilder_24as_24_40moonbitlang_2fcore_2fbuiltin_2eLogger = { method_0: _M0IPB13StringBuilderPB6Logger13write__string, method_1: _M0IP016_24default__implPB6Logger16write__substringGRPB13StringBuilderE, method_2: _M0IPB13StringBuilderPB6Logger11write__view, method_3: _M0IPB13StringBuilderPB6Logger11write__char, method_4: _M0IP016_24default__implPB6Logger28write__string__interpolationGRPB13StringBuilderE, method_5: _M0IP016_24default__implPB6Logger5writeGRPB13StringBuilderE };
 const _M0MPC16string6String4trimN7_2abindS6432 = "\t\n\r ";
 const _M0MPB4Iter4nextN6constrS9183GRPC16string10StringViewE = 0;
@@ -491,7 +505,7 @@ function _M0MPC16string10StringView11has__prefix(self, str) {
 function _M0MPC16string6String11has__prefix(self, str) {
   return _M0MPC16string10StringView11has__prefix(new _M0TPC16string10StringView(self, 0, self.length), str);
 }
-function _M0MPC15array5Array11new_2einnerGRP38username4svon8compiler8HtmlNodeE(capacity) {
+function _M0MPC15array5Array11new_2einnerGRP38username4svon8compiler10DiagnosticE(capacity) {
   return [];
 }
 function _M0MPC15array5Array4pushGRP38username4svon8compiler8HtmlNodeE(self, value) {
@@ -753,67 +767,6 @@ function _M0MPC15array5Array2atGsE(self, index) {
 function _M0MPC13ref3Ref3RefGiE(x) {
   return new _M0TPC13ref3RefGiE(x);
 }
-function _M0FP38username4svon8compiler13extract__html(source) {
-  const start_tag = "<script lang=\"moonbit\">";
-  const end_tag = "</script>";
-  let start;
-  _L: {
-    const _bind = _M0MPC16string6String4find(source, new _M0TPC16string10StringView(start_tag, 0, start_tag.length));
-    if (_bind === undefined) {
-      let start$2;
-      _L$2: {
-        const _bind$2 = "<script>";
-        const _bind$3 = _M0MPC16string6String4find(source, new _M0TPC16string10StringView(_bind$2, 0, _bind$2.length));
-        if (_bind$3 === undefined) {
-          return source;
-        } else {
-          const _Some = _bind$3;
-          const _start = _Some;
-          start$2 = _start;
-          break _L$2;
-        }
-      }
-      let end;
-      _L$3: {
-        const _bind$2 = "</script>";
-        const _bind$3 = _M0MPC16string6String4find(source, new _M0TPC16string10StringView(_bind$2, 0, _bind$2.length));
-        if (_bind$3 === undefined) {
-          return source;
-        } else {
-          const _Some = _bind$3;
-          const _end = _Some;
-          end = _end;
-          break _L$3;
-        }
-      }
-      const before = source.substring(0, start$2);
-      const aft = end + "</script>".length | 0;
-      const after = source.substring(aft, source.length);
-      return `${before}${after}`;
-    } else {
-      const _Some = _bind;
-      const _start = _Some;
-      start = _start;
-      break _L;
-    }
-  }
-  let end;
-  _L$2: {
-    const _bind = _M0MPC16string6String4find(source, new _M0TPC16string10StringView(end_tag, 0, end_tag.length));
-    if (_bind === undefined) {
-      return source;
-    } else {
-      const _Some = _bind;
-      const _end = _Some;
-      end = _end;
-      break _L$2;
-    }
-  }
-  const before = source.substring(0, start);
-  const aft = end + end_tag.length | 0;
-  const after = source.substring(aft, source.length);
-  return `${before}${after}`;
-}
 function _M0FP38username4svon8compiler15extract__script(source) {
   const start_tag = "<script lang=\"moonbit\">";
   const end_tag = "</script>";
@@ -959,6 +912,96 @@ function _M0FP38username4svon8compiler14extract__style(source) {
   }
   return source.substring(body_start, end);
 }
+function _M0FP38username4svon8compiler9is__space(ch) {
+  return _M0IPC16uint166UInt16PB2Eq5equal(ch, 32) || (_M0IPC16uint166UInt16PB2Eq5equal(ch, 9) || (_M0IPC16uint166UInt16PB2Eq5equal(ch, 13) || _M0IPC16uint166UInt16PB2Eq5equal(ch, 10)));
+}
+function _M0FP38username4svon8compiler19html__parse__bounds(source) {
+  const start = new _M0TPB8MutLocalGiE(0);
+  const end = source.length;
+  let _s;
+  _L: {
+    _L$2: {
+      const _bind = "<script";
+      const _bind$2 = _M0MPC16string6String4find(source, new _M0TPC16string10StringView(_bind, 0, _bind.length));
+      if (_bind$2 === undefined) {
+      } else {
+        const _Some = _bind$2;
+        const __s = _Some;
+        _s = __s;
+        break _L$2;
+      }
+      break _L;
+    }
+    let e;
+    _L$3: {
+      _L$4: {
+        const _bind = "</script>";
+        const _bind$2 = _M0MPC16string6String4find(source, new _M0TPC16string10StringView(_bind, 0, _bind.length));
+        if (_bind$2 === undefined) {
+        } else {
+          const _Some = _bind$2;
+          const _e = _Some;
+          e = _e;
+          break _L$4;
+        }
+        break _L$3;
+      }
+      const after_script = e + "</script>".length | 0;
+      start.val = after_script;
+    }
+  }
+  let st;
+  _L$2: {
+    _L$3: {
+      const _bind = "<style>";
+      const _bind$2 = _M0MPC16string6String4find(source, new _M0TPC16string10StringView(_bind, 0, _bind.length));
+      if (_bind$2 === undefined) {
+      } else {
+        const _Some = _bind$2;
+        const _st = _Some;
+        st = _st;
+        break _L$3;
+      }
+      break _L$2;
+    }
+    let se;
+    _L$4: {
+      _L$5: {
+        const _bind = "</style>";
+        const _bind$2 = _M0MPC16string6String4find(source, new _M0TPC16string10StringView(_bind, 0, _bind.length));
+        if (_bind$2 === undefined) {
+        } else {
+          const _Some = _bind$2;
+          const _se = _Some;
+          se = _se;
+          break _L$5;
+        }
+        break _L$4;
+      }
+      if (st >= start.val) {
+        start.val = se + "</style>".length | 0;
+      }
+    }
+  }
+  const i = new _M0TPB8MutLocalGiE(start.val);
+  while (true) {
+    let _tmp;
+    if (i.val < end) {
+      const _tmp$2 = i.val;
+      $bound_check(source, _tmp$2);
+      _tmp = _M0FP38username4svon8compiler9is__space(source.charCodeAt(_tmp$2));
+    } else {
+      _tmp = false;
+    }
+    if (_tmp) {
+      i.val = i.val + 1 | 0;
+      continue;
+    } else {
+      break;
+    }
+  }
+  return { _0: i.val, _1: end };
+}
 function _M0FP38username4svon8compiler8char__at(s, i) {
   if (i < 0 || i >= s.length) {
     return 0;
@@ -966,9 +1009,6 @@ function _M0FP38username4svon8compiler8char__at(s, i) {
     $bound_check(s, i);
     return s.charCodeAt(i);
   }
-}
-function _M0FP38username4svon8compiler9is__space(ch) {
-  return _M0IPC16uint166UInt16PB2Eq5equal(ch, 32) || (_M0IPC16uint166UInt16PB2Eq5equal(ch, 9) || (_M0IPC16uint166UInt16PB2Eq5equal(ch, 13) || _M0IPC16uint166UInt16PB2Eq5equal(ch, 10)));
 }
 function _M0FP38username4svon8compiler11is__special(ch) {
   return _M0IPC16uint166UInt16PB2Eq5equal(ch, 62) || (_M0IPC16uint166UInt16PB2Eq5equal(ch, 47) || (_M0IPC16uint166UInt16PB2Eq5equal(ch, 61) || _M0FP38username4svon8compiler9is__space(ch)));
@@ -986,6 +1026,9 @@ function _M0FP38username4svon8compiler10read__word(s, i, end) {
   }
   return { _0: s.substring(start, p.val), _1: p.val };
 }
+function _M0FP38username4svon8compiler6record(diags, code, message, start, end) {
+  _M0MPC15array5Array4pushGRP38username4svon8compiler8HtmlNodeE(diags, new _M0TP38username4svon8compiler10Diagnostic(code, message, start, end));
+}
 function _M0FP38username4svon8compiler8skip__ws(s, i, end) {
   const p = new _M0TPB8MutLocalGiE(i);
   while (true) {
@@ -998,8 +1041,8 @@ function _M0FP38username4svon8compiler8skip__ws(s, i, end) {
   }
   return p.val;
 }
-function _M0FP38username4svon8compiler11parse__text(html, pos, end) {
-  const parts = _M0MPC15array5Array11new_2einnerGRP38username4svon8compiler8HtmlNodeE(4);
+function _M0FP38username4svon8compiler11parse__text(html, pos, end, diags) {
+  const parts = _M0MPC15array5Array11new_2einnerGRP38username4svon8compiler10DiagnosticE(4);
   const i = new _M0TPB8MutLocalGiE(pos);
   const ts = new _M0TPB8MutLocalGiE(i.val);
   while (true) {
@@ -1016,6 +1059,7 @@ function _M0FP38username4svon8compiler11parse__text(html, pos, end) {
             _M0MPC15array5Array4pushGRP38username4svon8compiler8HtmlNodeE(parts, new _M0DTP38username4svon8compiler9TextChunk6Static(s));
           }
         }
+        const brace_start = i.val;
         i.val = i.val + 1 | 0;
         const es = i.val;
         const d = new _M0TPB8MutLocalGiE(1);
@@ -1037,6 +1081,9 @@ function _M0FP38username4svon8compiler11parse__text(html, pos, end) {
           } else {
             break;
           }
+        }
+        if (d.val > 0) {
+          _M0FP38username4svon8compiler6record(diags, "unclosed-brace", "Unclosed `{` in template expression — missing `}`", brace_start, i.val);
         }
         const raw_expr = html.substring(es, i.val);
         const expr = _M0MPC16string10StringView9to__owned(_M0MPC16string6String4trim(raw_expr, undefined));
@@ -1062,8 +1109,8 @@ function _M0FP38username4svon8compiler11parse__text(html, pos, end) {
   }
   return parts.length === 0 ? undefined : { _0: parts, _1: i.val };
 }
-function _M0FP38username4svon8compiler12parse__nodes(html, pos, end) {
-  const nodes = _M0MPC15array5Array11new_2einnerGRP38username4svon8compiler8HtmlNodeE(8);
+function _M0FP38username4svon8compiler12parse__nodes(html, pos, end, diags) {
+  const nodes = _M0MPC15array5Array11new_2einnerGRP38username4svon8compiler10DiagnosticE(8);
   const i = new _M0TPB8MutLocalGiE(pos);
   while (true) {
     if (i.val < end) {
@@ -1093,7 +1140,7 @@ function _M0FP38username4svon8compiler12parse__nodes(html, pos, end) {
         let next;
         _L: {
           _L$2: {
-            const _bind = _M0FP38username4svon8compiler14parse__element(html, i.val, end);
+            const _bind = _M0FP38username4svon8compiler14parse__element(html, i.val, end, diags);
             if (_bind === undefined) {
               i.val = i.val + 1 | 0;
             } else {
@@ -1116,7 +1163,7 @@ function _M0FP38username4svon8compiler12parse__nodes(html, pos, end) {
         let next;
         _L: {
           _L$2: {
-            const _bind = _M0FP38username4svon8compiler11parse__text(html, i.val, end);
+            const _bind = _M0FP38username4svon8compiler11parse__text(html, i.val, end, diags);
             if (_bind === undefined) {
               i.val = i.val + 1 | 0;
             } else {
@@ -1155,7 +1202,7 @@ function _M0FP38username4svon8compiler12parse__nodes(html, pos, end) {
   }
   return nodes;
 }
-function _M0FP38username4svon8compiler14parse__element(html, pos, end) {
+function _M0FP38username4svon8compiler14parse__element(html, pos, end, diags) {
   const i = new _M0TPB8MutLocalGiE(pos + 1 | 0);
   i.val = _M0FP38username4svon8compiler8skip__ws(html, i.val, end);
   let tag;
@@ -1169,10 +1216,11 @@ function _M0FP38username4svon8compiler14parse__element(html, pos, end) {
     break _L;
   }
   if (tag.length === 0) {
+    _M0FP38username4svon8compiler6record(diags, "empty-tag-name", "Expected a tag name after `<`", pos, i.val);
     return undefined;
   }
   i.val = after_tag;
-  const attrs = _M0MPC15array5Array11new_2einnerGRP38username4svon8compiler8HtmlNodeE(4);
+  const attrs = _M0MPC15array5Array11new_2einnerGRP38username4svon8compiler10DiagnosticE(4);
   const parsing = new _M0TPB8MutLocalGbE(true);
   while (true) {
     if (parsing.val) {
@@ -1265,7 +1313,7 @@ function _M0FP38username4svon8compiler14parse__element(html, pos, end) {
       break;
     }
   }
-  const children = _M0FP38username4svon8compiler12parse__nodes(html, i.val, end);
+  const children = _M0FP38username4svon8compiler12parse__nodes(html, i.val, end, diags);
   const close_tag = `</${tag}>`;
   const rest = html.substring(i.val, end);
   let close_end;
@@ -1274,6 +1322,7 @@ function _M0FP38username4svon8compiler14parse__element(html, pos, end) {
     _L$3: {
       const _bind = _M0MPC16string6String4find(rest, new _M0TPC16string10StringView(close_tag, 0, close_tag.length));
       if (_bind === undefined) {
+        _M0FP38username4svon8compiler6record(diags, "unclosed-tag", `<${tag}> has no matching closing tag </${tag}>`, pos, end);
         close_end = end;
       } else {
         const _Some = _bind;
@@ -1287,46 +1336,140 @@ function _M0FP38username4svon8compiler14parse__element(html, pos, end) {
   }
   return { _0: new _M0TP38username4svon8compiler11ElementNode(tag, attrs, children), _1: close_end };
 }
-function _M0FP38username4svon8compiler20remove__style__block(source) {
-  const start_tag = "<style>";
-  const end_tag = "</style>";
-  let start;
-  _L: {
-    const _bind = _M0MPC16string6String4find(source, new _M0TPC16string10StringView(start_tag, 0, start_tag.length));
-    if (_bind === undefined) {
-      return source;
-    } else {
-      const _Some = _bind;
-      const _start = _Some;
-      start = _start;
-      break _L;
-    }
-  }
-  let end;
-  _L$2: {
-    const _bind = _M0MPC16string6String4find(source, new _M0TPC16string10StringView(end_tag, 0, end_tag.length));
-    if (_bind === undefined) {
-      return source;
-    } else {
-      const _Some = _bind;
-      const _end = _Some;
-      end = _end;
-      break _L$2;
-    }
-  }
-  const before = source.substring(0, start);
-  const after_start = end + end_tag.length | 0;
-  const after = source.substring(after_start, source.length);
-  return `${before}${after}`;
-}
 function _M0FP38username4svon8compiler5parse(source) {
   const script = _M0FP38username4svon8compiler15extract__script(source);
   const styles = _M0FP38username4svon8compiler14extract__style(source);
   const imports = _M0FP38username4svon8compiler24extract__script__imports(source);
-  const html_full = _M0FP38username4svon8compiler13extract__html(source);
-  const html = _M0FP38username4svon8compiler20remove__style__block(html_full);
-  const nodes = _M0FP38username4svon8compiler12parse__nodes(html, 0, html.length);
-  return new _M0TP38username4svon8compiler8Template(script, styles, imports, nodes);
+  let html_start;
+  let html_end;
+  _L: {
+    const _bind = _M0FP38username4svon8compiler19html__parse__bounds(source);
+    const _html_start = _bind._0;
+    const _html_end = _bind._1;
+    html_start = _html_start;
+    html_end = _html_end;
+    break _L;
+  }
+  const diags = _M0MPC15array5Array11new_2einnerGRP38username4svon8compiler10DiagnosticE(4);
+  const nodes = _M0FP38username4svon8compiler12parse__nodes(source, html_start, html_end, diags);
+  return new _M0TP38username4svon8compiler8Template(script, styles, imports, nodes, diags);
+}
+function _M0FP38username4svon8compiler21offset__to__line__col(source, offset) {
+  const line = new _M0TPB8MutLocalGiE(1);
+  const col = new _M0TPB8MutLocalGiE(1);
+  const i = new _M0TPB8MutLocalGiE(0);
+  while (true) {
+    if (i.val < offset && i.val < source.length) {
+      const _tmp = i.val;
+      $bound_check(source, _tmp);
+      if (_M0IPC16uint166UInt16PB2Eq5equal(source.charCodeAt(_tmp), 10)) {
+        line.val = line.val + 1 | 0;
+        col.val = 1;
+      } else {
+        col.val = col.val + 1 | 0;
+      }
+      i.val = i.val + 1 | 0;
+      continue;
+    } else {
+      break;
+    }
+  }
+  return new _M0TP38username4svon8compiler9SourcePos(line.val, col.val);
+}
+function _M0FP38username4svon8compiler6spaces(n) {
+  const b = _M0MPB13StringBuilder21StringBuilder_2einner(0);
+  const i = new _M0TPB8MutLocalGiE(0);
+  while (true) {
+    if (i.val < n) {
+      _M0IPB13StringBuilderPB6Logger13write__string(b, " ");
+      i.val = i.val + 1 | 0;
+      continue;
+    } else {
+      break;
+    }
+  }
+  return _M0MPB13StringBuilder10to__string(b);
+}
+function _M0FP38username4svon8compiler21generate__code__frame(source, line, col) {
+  const b = _M0MPB13StringBuilder21StringBuilder_2einner(0);
+  const current_line = new _M0TPB8MutLocalGiE(1);
+  const line_start = new _M0TPB8MutLocalGiE(0);
+  const i = new _M0TPB8MutLocalGiE(0);
+  const digits = _M0MPC13int3Int18to__string_2einner(line + 2 | 0, 10).length;
+  while (true) {
+    if (i.val <= source.length && current_line.val <= (line + 2 | 0)) {
+      let _tmp;
+      if (i.val === source.length) {
+        _tmp = true;
+      } else {
+        const _tmp$2 = i.val;
+        $bound_check(source, _tmp$2);
+        _tmp = _M0IPC16uint166UInt16PB2Eq5equal(source.charCodeAt(_tmp$2), 10);
+      }
+      if (_tmp) {
+        if (current_line.val >= (line - 2 | 0)) {
+          let src_line;
+          if (current_line.val <= (line + 2 | 0)) {
+            const ln_end = i.val <= source.length ? i.val : source.length;
+            src_line = source.substring(line_start.val, ln_end);
+          } else {
+            src_line = "";
+          }
+          const line_num_str = _M0MPC13int3Int18to__string_2einner(current_line.val, 10);
+          const pad = _M0FP38username4svon8compiler6spaces(digits - line_num_str.length | 0);
+          _M0IPB13StringBuilderPB6Logger13write__string(b, pad);
+          _M0IPB13StringBuilderPB6Logger13write__string(b, line_num_str);
+          _M0IPB13StringBuilderPB6Logger13write__string(b, ": ");
+          _M0IPB13StringBuilderPB6Logger13write__string(b, src_line);
+          _M0IPB13StringBuilderPB6Logger13write__string(b, "\n");
+          if (current_line.val === line) {
+            _M0IPB13StringBuilderPB6Logger13write__string(b, _M0FP38username4svon8compiler6spaces(((digits + 2 | 0) + col | 0) - 1 | 0));
+            _M0IPB13StringBuilderPB6Logger13write__string(b, "^\n");
+          }
+        }
+        current_line.val = current_line.val + 1 | 0;
+        line_start.val = i.val + 1 | 0;
+      }
+      i.val = i.val + 1 | 0;
+      continue;
+    } else {
+      break;
+    }
+  }
+  return _M0MPB13StringBuilder10to__string(b);
+}
+function _M0FP38username4svon8compiler19format__diagnostics(source, diags) {
+  const b = _M0MPB13StringBuilder21StringBuilder_2einner(0);
+  _M0IPB13StringBuilderPB6Logger13write__string(b, "\n");
+  const _bind = 0;
+  const _bind$2 = diags.length;
+  let _tmp = _bind;
+  while (true) {
+    const i = _tmp;
+    if (i < _bind$2) {
+      const d = _M0MPC15array5Array2atGsE(diags, i);
+      const pos = _M0FP38username4svon8compiler21offset__to__line__col(source, d.start);
+      _M0IPB13StringBuilderPB6Logger13write__string(b, "  ");
+      _M0IPB13StringBuilderPB6Logger13write__string(b, d.code);
+      _M0IPB13StringBuilderPB6Logger13write__string(b, ": ");
+      _M0IPB13StringBuilderPB6Logger13write__string(b, d.message);
+      _M0IPB13StringBuilderPB6Logger13write__string(b, "\n");
+      _M0IPB13StringBuilderPB6Logger13write__string(b, "  at ");
+      _M0IPB13StringBuilderPB6Logger13write__string(b, _M0MPC13int3Int18to__string_2einner(pos.line, 10));
+      _M0IPB13StringBuilderPB6Logger13write__string(b, ":");
+      _M0IPB13StringBuilderPB6Logger13write__string(b, _M0MPC13int3Int18to__string_2einner(pos.column, 10));
+      _M0IPB13StringBuilderPB6Logger13write__string(b, "\n\n");
+      _M0IPB13StringBuilderPB6Logger13write__string(b, _M0FP38username4svon8compiler21generate__code__frame(source, pos.line, pos.column));
+      if (i < (diags.length - 1 | 0)) {
+        _M0IPB13StringBuilderPB6Logger13write__string(b, "\n");
+      }
+      _tmp = i + 1 | 0;
+      continue;
+    } else {
+      break;
+    }
+  }
+  return _M0MPB13StringBuilder10to__string(b);
 }
 function _M0FP38username4svon8compiler14generate__text(chunk, parent, b, el_id) {
   const id = el_id.val;
@@ -1527,7 +1670,7 @@ function _M0FP38username4svon8compiler17generate__element(el, parent, b, el_id) 
   _M0MPB13StringBuilder13write__objectGsE(_writer_17, el_var);
   _M0IPB13StringBuilderPB6Logger13write__string(_writer_17, ")\n");
 }
-function _M0FP38username4svon8compiler15transform__line(line) {
+function _M0FP38username4svon8compiler15transform__line(line, standalone) {
   if (line === "") {
     return "";
   }
@@ -1535,25 +1678,29 @@ function _M0FP38username4svon8compiler15transform__line(line) {
   if (_M0MPC16string6String11has__prefix(line, new _M0TPC16string10StringView(_bind, 0, _bind.length))) {
     return line;
   }
-  const result = new _M0TPB8MutLocalGsE(line);
-  const _tmp = result.val;
-  const _bind$2 = "state(";
-  const _tmp$2 = new _M0TPC16string10StringView(_bind$2, 0, _bind$2.length);
-  const _bind$3 = "@svon.state(";
-  result.val = _M0MPC16string6String12replace__all(_tmp, _tmp$2, new _M0TPC16string10StringView(_bind$3, 0, _bind$3.length));
-  const _tmp$3 = result.val;
-  const _bind$4 = "derived(";
-  const _tmp$4 = new _M0TPC16string10StringView(_bind$4, 0, _bind$4.length);
-  const _bind$5 = "@svon.derived(";
-  result.val = _M0MPC16string6String12replace__all(_tmp$3, _tmp$4, new _M0TPC16string10StringView(_bind$5, 0, _bind$5.length));
-  const _tmp$5 = result.val;
-  const _bind$6 = "effect(";
-  const _tmp$6 = new _M0TPC16string10StringView(_bind$6, 0, _bind$6.length);
-  const _bind$7 = "@svon.effect(";
-  result.val = _M0MPC16string6String12replace__all(_tmp$5, _tmp$6, new _M0TPC16string10StringView(_bind$7, 0, _bind$7.length));
-  return result.val;
+  if (standalone) {
+    return line;
+  } else {
+    const result = new _M0TPB8MutLocalGsE(line);
+    const _tmp = result.val;
+    const _bind$2 = "state(";
+    const _tmp$2 = new _M0TPC16string10StringView(_bind$2, 0, _bind$2.length);
+    const _bind$3 = "@svon.state(";
+    result.val = _M0MPC16string6String12replace__all(_tmp, _tmp$2, new _M0TPC16string10StringView(_bind$3, 0, _bind$3.length));
+    const _tmp$3 = result.val;
+    const _bind$4 = "derived(";
+    const _tmp$4 = new _M0TPC16string10StringView(_bind$4, 0, _bind$4.length);
+    const _bind$5 = "@svon.derived(";
+    result.val = _M0MPC16string6String12replace__all(_tmp$3, _tmp$4, new _M0TPC16string10StringView(_bind$5, 0, _bind$5.length));
+    const _tmp$5 = result.val;
+    const _bind$6 = "effect(";
+    const _tmp$6 = new _M0TPC16string10StringView(_bind$6, 0, _bind$6.length);
+    const _bind$7 = "@svon.effect(";
+    result.val = _M0MPC16string6String12replace__all(_tmp$5, _tmp$6, new _M0TPC16string10StringView(_bind$7, 0, _bind$7.length));
+    return result.val;
+  }
 }
-function _M0FP38username4svon8compiler16generate__script(script, b) {
+function _M0FP38username4svon8compiler16generate__script(script, b, standalone) {
   const _bind = "\n";
   const raw_lines = _M0MPC16string6String5split(script, new _M0TPC16string10StringView(_bind, 0, _bind.length));
   const _it = raw_lines;
@@ -1572,7 +1719,7 @@ function _M0FP38username4svon8compiler16generate__script(script, b) {
     }
     const s = _M0MPC16string10StringView9to__owned(line);
     const trimmed = _M0MPC16string10StringView9to__owned(_M0MPC16string6String4trim(s, undefined));
-    const transformed = _M0FP38username4svon8compiler15transform__line(trimmed);
+    const transformed = _M0FP38username4svon8compiler15transform__line(trimmed, standalone);
     if (transformed.length > 0) {
       _M0IPB13StringBuilderPB6Logger13write__string(b, "  ");
       _M0IPB13StringBuilderPB6Logger13write__string(b, transformed);
@@ -1598,11 +1745,11 @@ function _M0FP38username4svon8compiler26generate__style__injection(css, b) {
   _M0IPB13StringBuilderPB6Logger13write__string(b, "  let head = @svon.document_head()\n");
   _M0IPB13StringBuilderPB6Logger13write__string(b, "  @svon.node_append_child(head, style_el)\n");
 }
-function _M0FP38username4svon8compiler8generate(t) {
+function _M0FP38username4svon8compiler8generate(t, standalone) {
   const b = _M0MPB13StringBuilder21StringBuilder_2einner(0);
   _M0IPB13StringBuilderPB6Logger13write__string(b, "/// Generated by Svon compiler\n");
   _M0IPB13StringBuilderPB6Logger13write__string(b, "fn main {\n");
-  _M0FP38username4svon8compiler16generate__script(t.script, b);
+  _M0FP38username4svon8compiler16generate__script(t.script, b, standalone);
   if (t.styles.length > 0) {
     _M0FP38username4svon8compiler26generate__style__injection(t.styles, b);
   }
@@ -1612,19 +1759,75 @@ function _M0FP38username4svon8compiler8generate(t) {
   _M0IPB13StringBuilderPB6Logger13write__string(b, "  let body = @svon.document_body()\n");
   _M0IPB13StringBuilderPB6Logger13write__string(b, "  @svon.node_append_child(body, root)\n");
   _M0IPB13StringBuilderPB6Logger13write__string(b, "}\n");
-  return _M0MPB13StringBuilder10to__string(b);
+  const result = _M0MPB13StringBuilder10to__string(b);
+  if (standalone) {
+    const _bind = "@svon.";
+    const _tmp = new _M0TPC16string10StringView(_bind, 0, _bind.length);
+    const _bind$2 = "";
+    return _M0MPC16string6String12replace__all(result, _tmp, new _M0TPC16string10StringView(_bind$2, 0, _bind$2.length));
+  } else {
+    return result;
+  }
 }
 function _M0FP38username4svon8compiler7compile(source) {
   const template = _M0FP38username4svon8compiler5parse(source);
-  return _M0FP38username4svon8compiler8generate(template);
+  if (template.diagnostics.length > 0) {
+    const b = _M0MPB13StringBuilder21StringBuilder_2einner(0);
+    _M0IPB13StringBuilderPB6Logger13write__string(b, "// ==========================================================\n");
+    _M0IPB13StringBuilderPB6Logger13write__string(b, "// Svon compilation failed with ");
+    _M0IPB13StringBuilderPB6Logger13write__string(b, _M0MPC13int3Int18to__string_2einner(template.diagnostics.length, 10));
+    _M0IPB13StringBuilderPB6Logger13write__string(b, " error(s):\n");
+    _M0IPB13StringBuilderPB6Logger13write__string(b, "//\n");
+    _M0IPB13StringBuilderPB6Logger13write__string(b, _M0FP38username4svon8compiler19format__diagnostics(source, template.diagnostics));
+    _M0IPB13StringBuilderPB6Logger13write__string(b, "//\n");
+    _M0IPB13StringBuilderPB6Logger13write__string(b, "// ==========================================================\n");
+    _M0IPB13StringBuilderPB6Logger13write__string(b, "\n");
+    _M0IPB13StringBuilderPB6Logger13write__string(b, "fn main {\n");
+    _M0IPB13StringBuilderPB6Logger13write__string(b, "  let _svon_compile_error : Int = \"Fix the errors above in your .svon template\"\n");
+    _M0IPB13StringBuilderPB6Logger13write__string(b, "}\n");
+    return _M0MPB13StringBuilder10to__string(b);
+  } else {
+    return _M0FP38username4svon8compiler8generate(template, false);
+  }
 }
 function _M0FP48username4svon3cmd7compile12cmd__compile(args) {
   const src = _M0FP48username4svon3cmd7compile10read__file(_M0MPC15array5Array2atGsE(args, 0));
+  const tmpl = _M0FP38username4svon8compiler5parse(src);
+  if (tmpl.diagnostics.length > 0) {
+    const err = _M0FP38username4svon8compiler19format__diagnostics(src, tmpl.diagnostics);
+    _M0FP48username4svon3cmd7compile13write__stderr(err);
+    _M0FP48username4svon3cmd7compile13write__stderr("\n");
+    _M0FP48username4svon3cmd7compile4exit(1);
+  }
   const out = _M0FP38username4svon8compiler7compile(src);
   _M0FPB7printlnGsE(out);
 }
 function _M0FP48username4svon3cmd7compile8cmd__dev(args) {
   _M0FPB7printlnGsE("Run: python3 -m http.server 8080");
+}
+function _M0FP48username4svon3cmd7compile9cmd__init(args) {
+  const dir = args.length >= 2 ? _M0MPC15array5Array2atGsE(args, 1) : ".";
+  const svon_dep = `${dir}/deps/svon`;
+  _M0FP48username4svon3cmd7compile5mkdir(svon_dep);
+  const base = _M0FP48username4svon3cmd7compile8cli__dir();
+  const files = ["types.mbt", "signal.mbt", "runtime.mbt", "dom.mbt", "state.mbt", "svon.mbt"];
+  const _bind = 0;
+  const _bind$2 = files.length;
+  let _tmp = _bind;
+  while (true) {
+    const i = _tmp;
+    if (i < _bind$2) {
+      const name = _M0MPC15array5Array2atGsE(files, i);
+      _M0FP48username4svon3cmd7compile11write__file(`${svon_dep}/${name}`, _M0FP48username4svon3cmd7compile10read__file(`${base}/runtime/${name}`));
+      _tmp = i + 1 | 0;
+      continue;
+    } else {
+      break;
+    }
+  }
+  _M0FP48username4svon3cmd7compile11write__file(`${svon_dep}/moon.pkg`, "");
+  _M0FP48username4svon3cmd7compile11write__file(`${dir}/moon.mod.json`, "{\n  \"name\": \"local/svonpages\",\n  \"version\": \"0.1.0\",\n  \"preferred_target\": \"js\"\n}\n");
+  _M0FP48username4svon3cmd7compile13write__stderr(`Initialized ${dir}/deps/svon/\n`);
 }
 function _M0FP48username4svon3cmd7compile15moon__mod__text(name) {
   const b = _M0MPB13StringBuilder21StringBuilder_2einner(0);
@@ -1661,6 +1864,7 @@ function _M0FP48username4svon3cmd7compile8cmd__new(args) {
   _M0FP48username4svon3cmd7compile11write__file(`${name}/README.md`, _M0FP48username4svon3cmd7compile12readme__text(name));
   _M0FPB7printlnGsE(`Created: ${name}/`);
   _M0FPB7printlnGsE(`  cd ${name}`);
+  _M0FPB7printlnGsE("  svonc init .                # initialize shared svonlib/");
   _M0FPB7printlnGsE("  svonc pages/index.svon > cmd/site/main.mbt");
   _M0FPB7printlnGsE("  moon build cmd/site --target js");
   _M0FPB7printlnGsE("  python3 -m http.server 8080");
@@ -1669,9 +1873,10 @@ function _M0FP48username4svon3cmd7compile11print__help() {
   _M0FPB7printlnGsE("Svon — reactive MoonBit templates");
   _M0FPB7printlnGsE("");
   _M0FPB7printlnGsE("Commands:");
-  _M0FPB7printlnGsE("  svonc <file.svon>          Compile to stdout");
-  _M0FPB7printlnGsE("  svonc new <name>           Scaffold new project");
-  _M0FPB7printlnGsE("  svonc dev                  Serve current directory");
+  _M0FPB7printlnGsE("  svonc <file.svon>           Compile to stdout");
+  _M0FPB7printlnGsE("  svonc init [dir]            Initialize project with shared svonlib/");
+  _M0FPB7printlnGsE("  svonc new <name>            Scaffold new project");
+  _M0FPB7printlnGsE("  svonc dev                   Serve current directory");
   _M0FPB7printlnGsE("");
 }
 (() => {
@@ -1687,6 +1892,10 @@ function _M0FP48username4svon3cmd7compile11print__help() {
   }
   if (cmd === "new" && args.length >= 2) {
     _M0FP48username4svon3cmd7compile8cmd__new(args);
+    return;
+  }
+  if (cmd === "init") {
+    _M0FP48username4svon3cmd7compile9cmd__init(args);
     return;
   }
   if (cmd === "dev") {
