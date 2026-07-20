@@ -49,6 +49,7 @@ pub(all) struct Template {
   imports : String         // Collected import statements (e.g. from `use` directives).
   nodes : Array[HtmlNode]  // The list of top-level HTML nodes in the template body.
   diagnostics : Array[Diagnostic]  // Errors and warnings collected during parsing.
+  script_start_line : Int  // 1-based line number in the source where "<script" appears.
 }
 
 ///|

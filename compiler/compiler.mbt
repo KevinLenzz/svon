@@ -240,7 +240,7 @@ fn generate_html(app_name : String) -> String {
 /// The generated package manifest always includes:
 /// ```json
 /// import {
-///   "username/svon" @svon,
+///   "username/svon/runtime" @svon,
 ///   // ... any template-level imports ...
 /// }
 /// supported_targets = "js"

@@ -9,7 +9,7 @@
   "files": [
     "svonc.js",
     "svonc",
-    "README.md"
+    "runtime/"
   ],
   "keywords": ["svon", "svelte", "moonbit", "template", "compiler", "reactive"],
   "license": "Apache-2.0",

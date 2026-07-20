@@ -17,10 +17,63 @@ pub fn parse(source : String) -> Template {
   let script = extract_script(source)
   let styles = extract_style(source)
   let imports = extract_script_imports(source)
-  let (html_start, html_end) = html_parse_bounds(source)
+  let html = extract_html(source)
+  let html_no_style = remove_style_block(html)
   let diags = Array::new(capacity=4)
-  let nodes = parse_nodes(source, html_start, html_end, diags)
-  { script, styles, imports, nodes, diagnostics: diags }
+  let nodes = parse_nodes(html_no_style, 0, html_no_style.length(), diags)
+  let script_start_line = match source.find("<script") {
+    Option::Some(pos) => offset_to_line_col(source, pos).line
+    Option::None => 1
+  }
+  { script, styles, imports, nodes, diagnostics: diags, script_start_line }
+}
+
+fn extract_html(source : String) -> String {
+  let start_tag = "<script lang=\"moonbit\">"
+  let end_tag = "</script>"
+  match source.find(start_tag) {
+    Option::Some(start) =>
+      match source.find(end_tag) {
+        Option::Some(end) => {
+          let before = source.unsafe_substring(start=0, end=start)
+          let aft = end + end_tag.length()
+          let after = source.unsafe_substring(start=aft, end=source.length())
+          before + after
+        }
+        Option::None => source
+      }
+    Option::None =>
+      match source.find("<script>") {
+        Option::Some(start) =>
+          match source.find("</script>") {
+            Option::Some(end) => {
+              let before = source.unsafe_substring(start=0, end=start)
+              let aft = end + "</script>".length()
+              let after = source.unsafe_substring(start=aft, end=source.length())
+              before + after
+            }
+            Option::None => source
+          }
+        Option::None => source
+      }
+  }
+}
+
+fn remove_style_block(source : String) -> String {
+  let start_tag = "<style>"
+  let end_tag = "</style>"
+  match source.find(start_tag) {
+    Option::Some(start) => match source.find(end_tag) {
+      Option::Some(end) => {
+        let before = source.unsafe_substring(start=0, end=start)
+        let after_start = end + end_tag.length()
+        let after = source.unsafe_substring(start=after_start, end=source.length())
+        before + after
+      }
+      Option::None => source
+    }
+    Option::None => source
+  }
 }
 
 ///|
@@ -32,42 +85,6 @@ pub fn parse(source : String) -> Template {
 /// All error positions reported by the parser are relative to the full
 /// `source` string, so line/column calculations are correct without any
 /// offset arithmetic.
-fn html_parse_bounds(source : String) -> (Int, Int) {
-  let mut start = 0
-  let end = source.length()
-  // Skip past the <script> block if present
-  match source.find("<script") {
-    Option::Some(_s) => match source.find("</script>") {
-      Option::Some(e) => {
-        let after_script = e + "</script>".length()
-        start = after_script
-      }
-      Option::None => ()
-    }
-    Option::None => ()
-  }
-  // Trim the <style> block region if present (convert to a "skip region")
-  // We do this by passing a modified end, since style comes before the HTML body
-  match source.find("<style>") {
-    Option::Some(st) => match source.find("</style>") {
-      Option::Some(se) => {
-        // If the style block starts within our HTML range, skip past it
-        if st >= start {
-          start = se + "</style>".length()
-        }
-      }
-      Option::None => ()
-    }
-    Option::None => ()
-  }
-  // Skip whitespace after the style block to find the real HTML start
-  let mut i = start
-  while i < end && is_space(source[i]) {
-    i = i + 1
-  }
-  (i, end)
-}
-
 ///|
 /// Convert a character offset into a 1-based line and column for display.
 fn offset_to_line_col(source : String, offset : Int) -> SourcePos {

@@ -1,4 +1,6 @@
-import { "username/svon" @svon, }
+import {
+  "username/svon/runtime" @svon,
+}
 supported_targets = "js"
 options(
   "is-main": true,

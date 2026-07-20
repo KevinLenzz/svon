@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// svonc — Svon template compiler
-// The compiled MoonBit code reads process.argv.slice(2) directly.
-// We just need to require it — it runs main() as an IIFE.
+globalThis.__svonc_run = function(cmd) {
+  try { return require("child_process").execSync(cmd + " 2>&1", {encoding:"utf-8"}) }
+  catch(e) { return (e.stdout||"")+(e.stderr||"")+"\nSVONC_EXIT:"+(e.status||1) }
+}
 require("./svonc.js");

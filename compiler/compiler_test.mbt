@@ -22,8 +22,8 @@ test "extract script block" {
 test "generate static text node" {
   let input = tpl("", "<p>Hello World</p>")
   let result = @compiler.compile(input)
-  inspect(result.contains("document_create_text_node(\"Hello World\")"), content="true")
-  inspect(result.contains("node_append_child"), content="true")
+  inspect(result.contains("template_from_html"), content="true")
+  inspect(result.contains("template_clone_content"), content="true")
 }
 
 test "generate expression text binding" {
@@ -42,9 +42,8 @@ test "generate element with attribute" {
     "<div class=\"container\"><span>text</span></div>",
   )
   let result = @compiler.compile(input)
-  inspect(result.contains("document_create_element(\"div\")"), content="true")
-  inspect(result.contains("document_create_element(\"span\")"), content="true")
-  inspect(result.contains("node_set_attribute"), content="true")
+  inspect(result.contains("template_clone_content"), content="true")
+  inspect(result.contains("container"), content="true")
 }
 
 test "generate event handler" {

@@ -41,4 +41,4 @@ pub fn[T] Derived::get(self : Derived[T]) -> T {
 /// No-op `.set()` on Derived — deriveds are read-only.  Kept for
 /// type-system symmetry so code using `.set()` on a variable works
 /// regardless of whether it's State or Derived.
-pub fn[T] Derived::set(self : Derived[T], _v : T) -> Unit {}
+pub fn[T] Derived::set(self : Derived[T], _v : T) -> Unit { let _ = self }

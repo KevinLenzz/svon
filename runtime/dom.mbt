@@ -73,3 +73,28 @@ pub extern "js" fn document_body() -> DomNode =
 #cfg(target="js")
 pub extern "js" fn document_head() -> DomNode =
   #| () => document.head
+
+///|
+/// Create a `<template>` element pre-filled with static HTML.
+/// The HTML is parsed by the browser's native parser once (at module-init
+/// time when assigned to a `let`).  Call `template_clone_content` per
+/// component instance to get a deep-cloned copy of the parsed DOM.
+#cfg(target="js")
+pub extern "js" fn template_from_html(html : String) -> DomNode =
+  #| (html) => { let t = document.createElement("template"); t.innerHTML = html; return t }
+
+///|
+/// Clone the content of a `<template>` element (deep clone).
+/// Returns a DocumentFragment that can be appended to the live DOM.
+/// Call this once per component instance — `cloneNode(true)` is a
+/// single native operation that deep-clones the entire pre-parsed tree.
+#cfg(target="js")
+pub extern "js" fn template_clone_content(tmpl : DomNode) -> DomNode =
+  #| (tmpl) => tmpl.content.cloneNode(true)
+
+///|
+/// Get the nth child node (0-indexed).  Returns a DomNode or null.
+/// Used to locate dynamic placeholder nodes within cloned templates.
+#cfg(target="js")
+pub extern "js" fn node_child(node : DomNode, index : Int) -> DomNode? =
+  #| (node, index) => node.childNodes[index] ?? null

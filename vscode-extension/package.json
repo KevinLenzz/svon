@@ -27,11 +27,26 @@
     "url": "git+https://github.com/username/svon.git"
   },
   "contributes": {
+    "configuration": {
+      "title": "Svon",
+      "properties": {
+        "svon.moonPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the MoonBit compiler (moon). Auto-detected from PATH if left empty."
+        }
+      }
+    },
     "languages": [
       {
         "id": "svon",
-        "aliases": ["Svon", "svon"],
-        "extensions": [".svon"],
+        "aliases": [
+          "Svon",
+          "svon"
+        ],
+        "extensions": [
+          ".svon"
+        ],
         "configuration": "./language-configuration.json"
       }
     ],
@@ -40,11 +55,6 @@
         "language": "svon",
         "scopeName": "source.svon",
         "path": "./syntaxes/svon.tmLanguage.json"
-      },
-      {
-        "scopeName": "source.moonbit.embedded",
-        "path": "./syntaxes/moonbit-embedded.tmLanguage.json",
-        "injectTo": ["source.svon"]
       }
     ]
   },
@@ -56,6 +66,7 @@
     "package": "vsce package"
   },
   "devDependencies": {
+    "@types/node": "^26.1.1",
     "@types/vscode": "^1.85.0",
     "@vscode/vsce": "^2.32.0",
     "typescript": "^5.9.3"

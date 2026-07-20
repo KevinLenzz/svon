@@ -25,7 +25,7 @@
       ]
     },
     "script-moonbit-block": {
-      "name": "meta.embedded.block.moonbit",
+      "name": "meta.embedded.block.svon",
       "begin": "(<)(script)\\b(?:[^>]*\\blang\\s*=\\s*\"moonbit\"[^>]*)>",
       "beginCaptures": {
         "1": { "name": "punctuation.definition.tag.begin.html" },
@@ -37,7 +37,6 @@
         "2": { "name": "entity.name.tag.script.html" },
         "3": { "name": "punctuation.definition.tag.end.html" }
       },
-      "contentName": "source.moonbit",
       "patterns": [
         {
           "include": "#moonbit-syntax"
@@ -54,7 +53,7 @@
       "endCaptures": {
         "0": { "name": "punctuation.definition.expression.end.svon" }
       },
-      "contentName": "source.moonbit.expression",
+      "contentName": "meta.embedded.expression.moonbit.svon",
       "patterns": [
         {
           "include": "#moonbit-syntax"
@@ -69,8 +68,19 @@
         "0": { "name": "punctuation.definition.comment.html" }
       }
     },
+    "moonbit-arrow": {
+      "patterns": [
+        {
+          "name": "storage.type.function.arrow.moonbit",
+          "match": "->"
+        }
+      ]
+    },
     "moonbit-syntax": {
       "patterns": [
+        {
+          "include": "#moonbit-arrow"
+        },
         {
           "include": "#moonbit-keywords"
         },
