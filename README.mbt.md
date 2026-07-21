@@ -4,30 +4,87 @@ A fine-grained reactive signal system + template compiler inspired by [Svelte 5]
 
 ```html
 <script lang="moonbit">
-let count = state(0)
-let doubled = derived(fn() { count.get() * 2 })
-fn increment() { count.set(count.get() + 1) }
+let name = $state("")
+let agreed = $state(false)
+let selected = $state("a")
+let volume_val = $state("50")
+let show = $state(false)
+let time_val = $state("0")
+let speed = $state("1.0")
+let paused = $state(true)
+let muted = $state(false)
+let html = $state("<b>edit</b>")
+let dim = $state(0)
+let mut el : DomNode? = None
+let count=$state(0)
 </script>
 
-<style>
-  h1 { color: #ff3e00; }
-  button { font-size: 1.2rem; }
-</style>
+<div>
+  <h1>Bindings Demo</h1>
 
-<h1>Count: {count.get()}</h1>
-<p>Doubled: {doubled.get()}</p>
-<button onclick={increment}>+</button>
+  <h2>input bind:value</h2>
+  <input bind:value={name.get()} placeholder="type here"/>
+  <p>You typed: {name.get()}</p>
+
+  <h2>checkbox bind:checked</h2>
+  <label><input type="checkbox" bind:checked={agreed.get()}/> I agree</label>
+  <p>Agreed: {agreed.get().to_string()}</p>
+
+  <h2>radio bind:value</h2>
+  <label><input type="radio" name="sel" bind:group={selected.get()} checked value="a"/> A</label>
+  <label><input type="radio" name="sel" bind:group={selected.get()} value="b"/> B</label>
+  <label><input type="radio" name="sel" bind:group={selected.get()} value="c"/> C</label>
+  <p>Selected: {selected.get()}</p>
+
+  <h2>range bind:value</h2>
+  <input type="range" min="0" max="100" bind:value={volume_val.get()}/>
+  <p>Volume: {volume_val.get()}</p>
+
+  <h2>details bind:open</h2>
+  <details bind:open={show.get()}>
+    <summary>Toggle me</summary>
+    <p>Content shown: {show.get().to_string()}</p>
+  </details>
+
+  <!-- <h2>bind:currentTime + bind:playbackRate + bind:paused + bind:volume + bind:muted</h2>
+  <p>These work on audio/video elements (JS runtime only).</p> -->
+
+  <h2>bind:this (DOM reference)</h2>
+  <p id="ref-para" bind:this={el}>This paragraph has bind:this</p>
+  <p>The reference is captured at mount time.</p>
+  <button onclick={fn(){count.set(count.get()+1)}}>+</button>
+  {#for i in 0..=count.get()}
+    {
+      match el{
+        Some(e)=>@svon.dom_debug(e)
+        None=>"no";
+      }
+    }
+  {/for}
+</div>
+
+
+
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 700px; margin: 2rem auto; padding: 0 1rem; }
+  h2 { margin-top: 1.5rem; color: #333; }
+  input, select, textarea { padding: 4px 8px; margin: 4px 0; }
+  label { display: flex; align-items: center; gap: 4px; margin: 4px 0; }
+  [contenteditable] { outline: none; }
+</style>
 ```
+
+![generated page](.\README\page.png)
 
 ## Architecture
 
 ```
 .svon template    svonc compiler     MoonBit source    moon build         Browser
-┌──────────┐     ┌──────────┐     ┌───────────┐     ┌──────────┐     ┌──────┐
-│ <script> │ ──▶ │ parser   │ ──▶ │ fn main { │ ──▶ │ app.js   │ ──▶ │ DOM  │
-│ <style>  │     │ codegen  │     │  state()  │     │          │     │      │
-│ <div>..  │     └──────────┘     │  derived()│     └──────────┘     └──────┘
-└──────────┘                      └───────────┘
+┌──────────┐     ┌──────────┐     ┌────────────┐     ┌──────────┐     ┌──────┐
+│ <script> │ ──▶ │ parser   │ ──▶ │ fn main {  │ ──▶ │ app.js   │ ──▶ │ DOM  │
+│ <style>  │     │ codegen  │     │  $state()  │     │          │     │      │
+│ <div>..  │     └──────────┘     │  $derived()│     └──────────┘     └──────┘
+└──────────┘                      └────────────┘
 ```
 
 | Layer | Source | Description |
@@ -68,20 +125,10 @@ my-app/
 ### Compile and run
 
 ```bash
-# Compile .svon → MoonBit source
-svonc pages/index.svon > cmd/site/main.mbt
+#compiled to ./out/
+svonc build
 
-# Create moon.pkg
-cat > cmd/site/moon.pkg << 'PKG'
-import { "username/svon" @svon, }
-supported_targets = "js"
-options("is-main": true)
-PKG
-
-# Build JavaScript
-moon build cmd/site --target js
-
-# Serve
+# Serve, you may use python to manually open a simple server in current time
 python3 -m http.server 8080
 ```
 
@@ -93,9 +140,9 @@ Open `http://localhost:8080` and navigate to `cmd/site/index.html`.
 
 ```html
 <script lang="moonbit">
-let count = state(0)                          // reactive state
-let doubled = derived(fn() { count.get() * 2 })   // computed value
-let _ = effect(fn() {                         // side-effect
+let count = $state(0)                          // reactive state
+let doubled = $derived(fn() { count.get() * 2 })   // computed value
+let _ = $effect(fn() {                         // side-effect
   ... 
   Option::None                                // no cleanup
 })
@@ -114,55 +161,16 @@ fn handler() { count.set(count.get() + 1) }   // event handler
 
 CSS is extracted at compile time and injected into the document `<head>` via a `<style>` element.
 
-### HTML template
-
-```html
-<div>
-  <h1>Counter: {count.get()}</h1>            <!-- expression interpolation -->
-  <p class="label">{doubled.get()}</p>
-  <button onclick={handler}>+</button>        <!-- event binding -->
-</div>
-```
-
 | Feature | Syntax | Svelte equivalent |
 |---------|--------|-------------------|
-| State | `let x = state(v)` | `let x = $state(v)` |
-| Computed | `let d = derived(fn)` | `let d = $derived(fn)` |
-| Effect | `effect(fn() { ... Option::None })` | `$effect(() => { ... })` |
+| State | `let x = $state(v)` | `let x = $state(v)` |
+| Computed | `let d = $derived(fn)` | `let d = $derived(fn)` |
+| Effect | `$effect(fn() { ... Option::None })` | `$effect(() => { ... })` |
 | Read | `.get()` | direct access |
 | Write | `.set(v)` | `x = v` |
 | Expression | `{expr}` | `{expr}` |
 | Event | `onclick={fn}` | `onclick={fn}` |
 | Style | `<style>...</style>` | `<style>...</style>` |
-
-## Reactive API
-
-```moonbit
-// Create
-let count = @svon.state(0)                   // State[Int]
-let name  = @svon.state("Svon")              // State[String]
-
-// Read (tracks dependency)
-let v = count.get()
-let v = @svon.read_source(count)
-
-// Write (triggers propagation)
-count.set(42)
-@svon.write_source(count, 42)
-
-// Computed (lazily recomputed, auto-tracks)
-let d = @svon.derived(fn() { count.get() * 2 })
-let v = @svon.read_derived(d)
-
-// Side-effect (re-runs when deps change)
-@svon.effect(fn() {
-  println(count.get().to_string())
-  Option::None
-})
-
-// Suppress dependency tracking
-@svon.untrack(fn() { count.get() })
-```
 
 ## CLI Reference
 
@@ -171,47 +179,6 @@ svonc <file.svon>           # compile to stdout (MoonBit source)
 svonc new <name>             # scaffold a new project
 svonc dev                    # serve current directory hint
 svonc --help                 # show help
-```
-
-## Project Structure
-
-```
-svon/
-├── compiler/                    # Template compiler (parser + codegen)
-│   ├── parser.mbt               # .svon → AST
-│   ├── codegen.mbt              # AST → MoonBit source
-│   ├── compiler.mbt             # Public API: compile(), generate_project()
-│   └── compiler_test.mbt        # 11 compiler tests
-│
-├── cmd/
-│   └── compile/                 # svonc CLI (npm package)
-│       └── main.mbt             # CLI implementation
-│
-├── runtime.mbt                  # Reactive runtime (dependency graph engine)
-├── types.mbt                    # Reaction struct + bit flags
-├── signal.mbt                   # Source / Derived / Effect structs
-├── state.mbt                    # State[T] wrapper (.get / .set)
-├── dom.mbt                      # DOM FFI bindings (js target)
-├── svon.mbt                     # Public API facade
-├── svon_test.mbt                # 8 reactive runtime tests
-│
-├── examples/                    # .svon template examples
-│   ├── counter.svon             # Counter with deriveds
-│   ├── hello.svon               # Hello world
-│   ├── deepdom.svon             # Deep nested DOM + chained deriveds
-│   └── test_suite.svon          # 6 pattern comprehensive test
-│
-├── cli/                         # npm package for svonc
-├── vscode-extension/            # VS Code language support
-└── moon.mod                     # MoonBit module configuration
-```
-
-## Testing
-
-```bash
-moon check          # type check — 0 errors
-moon test           # 19 tests, all passing
-moon test -v        # verbose output with test names
 ```
 
 ## License
