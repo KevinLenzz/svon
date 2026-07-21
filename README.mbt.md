@@ -74,7 +74,7 @@ let count=$state(0)
 </style>
 ```
 
-![generated page](.\README\page.png)
+![generated page](./README/page.png)
 
 ## Architecture
 
