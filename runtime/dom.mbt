@@ -45,7 +45,11 @@ pub extern "js" fn node_set_text_content(node : DomNode, text : String) -> Unit 
 /// Set an HTML attribute: `node.setAttribute(name, value)`.
 /// For static attributes like `class="container"`.
 #cfg(target="js")
-pub extern "js" fn node_set_attribute(node : DomNode, name : String, value : String) -> Unit =
+pub extern "js" fn node_set_attribute(
+  node : DomNode,
+  name : String,
+  value : String,
+) -> Unit =
   #| (node, name, value) => { node.setAttribute(name, value) }
 
 ///|
@@ -117,7 +121,11 @@ pub extern "js" fn document_create_comment(text : String) -> DomNode =
 /// Insert `new_child` into `parent` before `ref_child`.
 /// If `ref_child` is null, appends to the end.
 #cfg(target="js")
-pub extern "js" fn node_insert_before(parent : DomNode, new_child : DomNode, ref_child : DomNode) -> Unit =
+pub extern "js" fn node_insert_before(
+  parent : DomNode,
+  new_child : DomNode,
+  ref_child : DomNode,
+) -> Unit =
   #| (parent, new_child, ref_child) => parent.insertBefore(new_child, ref_child)
 
 ///|
@@ -126,54 +134,76 @@ pub extern "js" fn node_insert_before(parent : DomNode, new_child : DomNode, ref
 pub extern "js" fn node_remove_child(parent : DomNode, child : DomNode) -> Unit =
   #| (parent, child) => { if (child.parentNode === parent) parent.removeChild(child) }
 
-///| Get the current value of an input/select/textarea element.
+///|
+/// Get the current value of an input/select/textarea element.
 #cfg(target="js")
 pub extern "js" fn node_get_value(el : DomNode) -> String =
   #| (el) => el.value
 
-///| Get the checked state of a checkbox/radio element.
+///|
+/// Get the checked state of a checkbox/radio element.
 #cfg(target="js")
 pub extern "js" fn node_get_checked(el : DomNode) -> Bool =
   #| (el) => el.checked
 
-///| Get the open state of a <details> element.
+///|
+/// Set the .checked property of a checkbox/radio element.
+#cfg(target="js")
+pub extern "js" fn node_set_checked(el : DomNode, val : Bool) -> Unit =
+  #| (el, val) => el.checked = val
+
+///|
+/// Get the open state of a <details> element.
 #cfg(target="js")
 pub extern "js" fn node_get_open(el : DomNode) -> Bool =
   #| (el) => el.open
 
-///| Get a boolean DOM property (paused, muted, indeterminate, etc.).
+///|
+/// Get a boolean DOM property (paused, muted, indeterminate, etc.).
 #cfg(target="js")
 pub extern "js" fn node_get_bool(el : DomNode, prop : String) -> Bool =
   #| (el, prop) => !!el[prop]
 
 ///| Set the .value property of an input (not the HTML attribute).
-///| Prevents resetting the slider/input position during drag.
+
+///|
+/// Prevents resetting the slider/input position during drag.
 #cfg(target="js")
 pub extern "js" fn node_set_value(el : DomNode, val : String) -> Unit =
   #| (el, val) => el.value = val
 
-///| Set the .open property of a <details> element.
+///|
+/// Set the .open property of a <details> element.
 #cfg(target="js")
 pub extern "js" fn node_set_open(el : DomNode, val : Bool) -> Unit =
   #| (el, val) => el.open = val
 
-///| Set a text property (textContent, innerText, innerHTML) on an element.
+///|
+/// Set a text property (textContent, innerText, innerHTML) on an element.
 #cfg(target="js")
-pub extern "js" fn node_set_text_prop(el : DomNode, prop : String, val : String) -> Unit =
+pub extern "js" fn node_set_text_prop(
+  el : DomNode,
+  prop : String,
+  val : String,
+) -> Unit =
   #| (el, prop, val) => el[prop] = val
 
-///| Read a text property (textContent, innerText, innerHTML) from an element.
+///|
+/// Read a text property (textContent, innerText, innerHTML) from an element.
 #cfg(target="js")
 pub extern "js" fn node_get_text_prop(el : DomNode, prop : String) -> String =
   #| (el, prop) => el[prop] ?? ""
 
 ///| Get a DOM property value generically.  Used by bind:prop for properties
-///| not covered by specialised getters (value, checked, etc.).
+
+///|
+/// not covered by specialised getters (value, checked, etc.).
 #cfg(target="js")
 pub extern "js" fn node_get_property(el : DomNode, prop : String) -> String =
   #| (el, prop) => String(el[prop] ?? "")
 
-///| Debug-print a DOM node structure using outerHTML (first 200 chars).
+///|
+/// Debug-print a DOM node structure using outerHTML (first 200 chars).
 #cfg(target="js")
 pub extern "js" fn dom_debug(node : DomNode) -> String =
   #| (node) => { let s = node.outerHTML || "<" + node.nodeName + ">"; return s.length > 200 ? s.slice(0, 200) + "..." : s }

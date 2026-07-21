@@ -153,18 +153,17 @@ fn transform_line(line : String, standalone : Bool) -> String {
     line
   } else {
     // Otherwise, perform the three shorthand→qualified substitutions.
-    let mut result = line
-    result = result.replace_all(old="state(", new="@svon.state(")
-    result = result.replace_all(old="derived(", new="@svon.derived(")
-    result = result.replace_all(old="effect(", new="@svon.effect(")
-    result = result.replace_all(old="DomNode", new="@svon.DomNode")
-    result = result.replace_all(old="dom_debug(", new="@svon.dom_debug(")
-    result = result.replace_all(old="console.log(", new="@svon.console_log(")
-    result = result.replace_all(old="console.info(", new="@svon.console_info(")
-    result = result.replace_all(old="console.warn(", new="@svon.console_warn(")
-    result = result.replace_all(old="console.error(", new="@svon.console_info(")
-    result = result.replace_all(old="console.debug(", new="@svon.console_info(")
-    result
+    line
+    .replace_all(old="$state(", new="@svon.state(")
+    .replace_all(old="$derived(", new="@svon.derived(")
+    .replace_all(old="$effect(", new="@svon.effect(")
+    .replace_all(old="DomNode", new="@svon.DomNode")
+    .replace_all(old="dom_debug(", new="@svon.dom_debug(")
+    .replace_all(old="console.log(", new="@svon.console_log(")
+    .replace_all(old="console.info(", new="@svon.console_info(")
+    .replace_all(old="console.warn(", new="@svon.console_warn(")
+    .replace_all(old="console.error(", new="@svon.console_info(")
+    .replace_all(old="console.debug(", new="@svon.console_info(")
   }
 }
 
@@ -297,7 +296,7 @@ fn generate_element(
           "  \{prefix}node_set_attribute(\{el_var}, \"\{name}\", \"\{value}\")\n"
       Attribute::Event(event, handler) =>
         b <+
-          "  \{prefix}node_add_event_listener(\{el_var}, \"\{event}\", \{handler_prefix(handler)})\n"
+          "  \{prefix}node_add_event_listener(\{el_var}, \"\{event}\", \{transform_line(handler,standalone)})\n"
       Attribute::Bind(attr_name, expr) => {
         if attr_name == "this" {
           let st_var = bind_state_var(expr)
@@ -316,6 +315,11 @@ fn generate_element(
           b <+ "    \{prefix}node_set_open(\{el_var}, (\{expr}))\n"
           b <+ "    Option::None\n"
           b <+ "  })\n"
+        } else if attr_name == "checked" {
+          b <+
+            "\{prefix}node_set_checked(\{el_var},if \{expr} {true} else {false})\n"
+        } else if attr_name == "group" {
+          //nothing
         } else {
           b <+ "        let _ = \{prefix}effect(fn() {\n"
           b <+
@@ -325,7 +329,7 @@ fn generate_element(
         }
         let st_var = bind_state_var(expr)
         let event = bind_event(attr_name)
-        let getter = bind_getter(el, attr_name)
+        let getter = bind_getter(attr_name)
         if st_var.length() > 0 && event.length() > 0 && getter.length() > 0 {
           b <+
             "  \{prefix}node_add_event_listener(\{el_var}, \"\{event}\", fn() {\n"
@@ -733,17 +737,6 @@ fn generate_for(
 }
 
 ///|
-fn handler_prefix(h : String) -> String {
-  h
-  .replace_all(old="dom_debug(", new="@svon.dom_debug(")
-  .replace_all(old="console.log(", new="@svon.console_log(")
-  .replace_all(old="console.warn(", new="@svon.console_warn(")
-  .replace_all(old="console.error(", new="@svon.console_error(")
-  .replace_all(old="console.info(", new="@svon.console_info(")
-  .replace_all(old="console.debug(", new="@svon.console_debug(")
-}
-
-///|
 fn bind_state_var(expr : String) -> String {
   match expr.find(".get()") {
     Option::Some(pos) => expr.unsafe_substring(start=0, end=pos)
@@ -755,7 +748,7 @@ fn bind_state_var(expr : String) -> String {
 fn bind_event(prop : String) -> String {
   if prop == "value" {
     "input"
-  } else if prop == "checked" || prop == "indeterminate" {
+  } else if prop == "checked" || prop == "indeterminate" || prop == "group" {
     "change"
   } else if prop == "open" {
     "toggle"
@@ -765,15 +758,10 @@ fn bind_event(prop : String) -> String {
 }
 
 ///|
-fn bind_getter(el : ElementNode, prop : String) -> String {
-  if prop == "value" {
+fn bind_getter(prop : String) -> String {
+  if prop == "value" || prop == "group" {
     "node_get_value"
   } else if prop == "checked" {
-    for attr in el.attributes {
-      if attr is Attribute::Static("type", "radio") {
-        return "node_get_value"
-      }
-    }
     "node_get_checked"
   } else if prop == "open" {
     "node_get_open"

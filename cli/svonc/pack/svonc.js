@@ -121,9 +121,6 @@ function _M0TP38username4svon8compiler8Template(param0, param1, param2, param3, 
   this.diagnostics = param4;
   this.script_start_line = param5;
 }
-function _M0TPB8MutLocalGsE(param0) {
-  this.val = param0;
-}
 const _M0FP48username4svon3cli5svonc10read__file = (path) => require("fs").readFileSync(path, "utf-8");
 const _M0FP48username4svon3cli5svonc11write__file = (path, content) => require("fs").writeFileSync(path, content);
 const _M0FP48username4svon3cli5svonc5mkdir = (path) => require("fs").mkdirSync(path, { recursive: true });
@@ -137,6 +134,9 @@ const _M0FP48username4svon3cli5svonc8cli__dir = () => __dirname;
 const _M0FP48username4svon3cli5svonc3run = (cmd) => __svonc_run(cmd);
 const _M0FP48username4svon3cli5svonc10moon__path = () => process.env.MOON || "/home/kevinlenz/.moon/bin/moon";
 const _M0FP48username4svon3cli5svonc3cwd = () => process.cwd();
+function _M0TPB8MutLocalGsE(param0) {
+  this.val = param0;
+}
 const _M0FP092moonbitlang_2fcore_2fbuiltin_2fStringBuilder_24as_24_40moonbitlang_2fcore_2fbuiltin_2eLogger = { method_0: _M0IPB13StringBuilderPB6Logger13write__string, method_1: _M0IP016_24default__implPB6Logger16write__substringGRPB13StringBuilderE, method_2: _M0IPB13StringBuilderPB6Logger11write__view, method_3: _M0IPB13StringBuilderPB6Logger11write__char, method_4: _M0IP016_24default__implPB6Logger28write__string__interpolationGRPB13StringBuilderE, method_5: _M0IP016_24default__implPB6Logger5writeGRPB13StringBuilderE };
 const _M0MPC16string6String4trimN7_2abindS6432 = "\t\n\r ";
 const _M0MPB4Iter4nextN6constrS9183GRPC16string10StringViewE = 0;
@@ -2464,41 +2464,10 @@ function _M0FP38username4svon8compiler11escape__mbt(s) {
   return _M0MPC16string6String12replace__all(_tmp$4, _tmp$5, new _M0TPC16string10StringView(_bind$6, 0, _bind$6.length));
 }
 function _M0FP38username4svon8compiler11bind__event(prop) {
-  return prop === "value" ? "input" : prop === "checked" || prop === "indeterminate" ? "change" : prop === "open" ? "toggle" : "";
+  return prop === "value" ? "input" : prop === "checked" || (prop === "indeterminate" || prop === "group") ? "change" : prop === "open" ? "toggle" : "";
 }
-function _M0FP38username4svon8compiler12bind__getter(el, prop) {
-  if (prop === "value") {
-    return "node_get_value";
-  } else {
-    if (prop === "checked") {
-      const _bind = el.attributes;
-      const _bind$2 = _bind.length;
-      let _tmp = 0;
-      while (true) {
-        const _ = _tmp;
-        if (_ < _bind$2) {
-          const attr = _bind[_];
-          if (attr.$tag === 0) {
-            const _Static = attr;
-            const _x = _Static._0;
-            if (_x === "type") {
-              const _x$2 = _Static._1;
-              if (_x$2 === "radio") {
-                return "node_get_value";
-              }
-            }
-          }
-          _tmp = _ + 1 | 0;
-          continue;
-        } else {
-          break;
-        }
-      }
-      return "node_get_checked";
-    } else {
-      return prop === "open" ? "node_get_open" : "";
-    }
-  }
+function _M0FP38username4svon8compiler12bind__getter(prop) {
+  return prop === "value" || prop === "group" ? "node_get_value" : prop === "checked" ? "node_get_checked" : prop === "open" ? "node_get_open" : "";
 }
 function _M0FP38username4svon8compiler16bind__state__var(expr) {
   let pos;
@@ -2516,31 +2485,58 @@ function _M0FP38username4svon8compiler16bind__state__var(expr) {
   }
   return expr.substring(0, pos);
 }
-function _M0FP38username4svon8compiler15handler__prefix(h) {
-  const _bind = "dom_debug(";
-  const _tmp = new _M0TPC16string10StringView(_bind, 0, _bind.length);
-  const _bind$2 = "@svon.dom_debug(";
-  const _tmp$2 = _M0MPC16string6String12replace__all(h, _tmp, new _M0TPC16string10StringView(_bind$2, 0, _bind$2.length));
-  const _bind$3 = "console.log(";
-  const _tmp$3 = new _M0TPC16string10StringView(_bind$3, 0, _bind$3.length);
-  const _bind$4 = "@svon.console_log(";
-  const _tmp$4 = _M0MPC16string6String12replace__all(_tmp$2, _tmp$3, new _M0TPC16string10StringView(_bind$4, 0, _bind$4.length));
-  const _bind$5 = "console.warn(";
-  const _tmp$5 = new _M0TPC16string10StringView(_bind$5, 0, _bind$5.length);
-  const _bind$6 = "@svon.console_warn(";
-  const _tmp$6 = _M0MPC16string6String12replace__all(_tmp$4, _tmp$5, new _M0TPC16string10StringView(_bind$6, 0, _bind$6.length));
-  const _bind$7 = "console.error(";
-  const _tmp$7 = new _M0TPC16string10StringView(_bind$7, 0, _bind$7.length);
-  const _bind$8 = "@svon.console_error(";
-  const _tmp$8 = _M0MPC16string6String12replace__all(_tmp$6, _tmp$7, new _M0TPC16string10StringView(_bind$8, 0, _bind$8.length));
-  const _bind$9 = "console.info(";
-  const _tmp$9 = new _M0TPC16string10StringView(_bind$9, 0, _bind$9.length);
-  const _bind$10 = "@svon.console_info(";
-  const _tmp$10 = _M0MPC16string6String12replace__all(_tmp$8, _tmp$9, new _M0TPC16string10StringView(_bind$10, 0, _bind$10.length));
-  const _bind$11 = "console.debug(";
-  const _tmp$11 = new _M0TPC16string10StringView(_bind$11, 0, _bind$11.length);
-  const _bind$12 = "@svon.console_debug(";
-  return _M0MPC16string6String12replace__all(_tmp$10, _tmp$11, new _M0TPC16string10StringView(_bind$12, 0, _bind$12.length));
+function _M0FP38username4svon8compiler15transform__line(line, standalone) {
+  if (line === "") {
+    return "";
+  }
+  const _bind = "//";
+  if (_M0MPC16string6String11has__prefix(line, new _M0TPC16string10StringView(_bind, 0, _bind.length))) {
+    return line;
+  }
+  if (standalone) {
+    return line;
+  } else {
+    const _bind$2 = "$state(";
+    const _tmp = new _M0TPC16string10StringView(_bind$2, 0, _bind$2.length);
+    const _bind$3 = "@svon.state(";
+    const _tmp$2 = _M0MPC16string6String12replace__all(line, _tmp, new _M0TPC16string10StringView(_bind$3, 0, _bind$3.length));
+    const _bind$4 = "$derived(";
+    const _tmp$3 = new _M0TPC16string10StringView(_bind$4, 0, _bind$4.length);
+    const _bind$5 = "@svon.derived(";
+    const _tmp$4 = _M0MPC16string6String12replace__all(_tmp$2, _tmp$3, new _M0TPC16string10StringView(_bind$5, 0, _bind$5.length));
+    const _bind$6 = "$effect(";
+    const _tmp$5 = new _M0TPC16string10StringView(_bind$6, 0, _bind$6.length);
+    const _bind$7 = "@svon.effect(";
+    const _tmp$6 = _M0MPC16string6String12replace__all(_tmp$4, _tmp$5, new _M0TPC16string10StringView(_bind$7, 0, _bind$7.length));
+    const _bind$8 = "DomNode";
+    const _tmp$7 = new _M0TPC16string10StringView(_bind$8, 0, _bind$8.length);
+    const _bind$9 = "@svon.DomNode";
+    const _tmp$8 = _M0MPC16string6String12replace__all(_tmp$6, _tmp$7, new _M0TPC16string10StringView(_bind$9, 0, _bind$9.length));
+    const _bind$10 = "dom_debug(";
+    const _tmp$9 = new _M0TPC16string10StringView(_bind$10, 0, _bind$10.length);
+    const _bind$11 = "@svon.dom_debug(";
+    const _tmp$10 = _M0MPC16string6String12replace__all(_tmp$8, _tmp$9, new _M0TPC16string10StringView(_bind$11, 0, _bind$11.length));
+    const _bind$12 = "console.log(";
+    const _tmp$11 = new _M0TPC16string10StringView(_bind$12, 0, _bind$12.length);
+    const _bind$13 = "@svon.console_log(";
+    const _tmp$12 = _M0MPC16string6String12replace__all(_tmp$10, _tmp$11, new _M0TPC16string10StringView(_bind$13, 0, _bind$13.length));
+    const _bind$14 = "console.info(";
+    const _tmp$13 = new _M0TPC16string10StringView(_bind$14, 0, _bind$14.length);
+    const _bind$15 = "@svon.console_info(";
+    const _tmp$14 = _M0MPC16string6String12replace__all(_tmp$12, _tmp$13, new _M0TPC16string10StringView(_bind$15, 0, _bind$15.length));
+    const _bind$16 = "console.warn(";
+    const _tmp$15 = new _M0TPC16string10StringView(_bind$16, 0, _bind$16.length);
+    const _bind$17 = "@svon.console_warn(";
+    const _tmp$16 = _M0MPC16string6String12replace__all(_tmp$14, _tmp$15, new _M0TPC16string10StringView(_bind$17, 0, _bind$17.length));
+    const _bind$18 = "console.error(";
+    const _tmp$17 = new _M0TPC16string10StringView(_bind$18, 0, _bind$18.length);
+    const _bind$19 = "@svon.console_info(";
+    const _tmp$18 = _M0MPC16string6String12replace__all(_tmp$16, _tmp$17, new _M0TPC16string10StringView(_bind$19, 0, _bind$19.length));
+    const _bind$20 = "console.debug(";
+    const _tmp$19 = new _M0TPC16string10StringView(_bind$20, 0, _bind$20.length);
+    const _bind$21 = "@svon.console_info(";
+    return _M0MPC16string6String12replace__all(_tmp$18, _tmp$19, new _M0TPC16string10StringView(_bind$21, 0, _bind$21.length));
+  }
 }
 function _M0FP38username4svon8compiler14generate__text(chunk, parent, b, el_id, standalone) {
   const id = el_id.val;
@@ -2803,7 +2799,7 @@ function _M0FP38username4svon8compiler17generate__element(el, parent, b, el_id, 
             _M0IPB13StringBuilderPB6Logger13write__string(_writer_17, ", \"");
             _M0MPB13StringBuilder13write__objectGsE(_writer_17, event);
             _M0IPB13StringBuilderPB6Logger13write__string(_writer_17, "\", ");
-            _M0MPB13StringBuilder13write__objectGsE(_writer_17, _M0FP38username4svon8compiler15handler__prefix(handler));
+            _M0MPB13StringBuilder13write__objectGsE(_writer_17, _M0FP38username4svon8compiler15transform__line(handler, standalone));
             _M0IPB13StringBuilderPB6Logger13write__string(_writer_17, ")\n");
           }
           break _L;
@@ -2862,48 +2858,61 @@ function _M0FP38username4svon8compiler17generate__element(el, parent, b, el_id, 
               const _writer_27 = b;
               _M0IPB13StringBuilderPB6Logger13write__string(_writer_27, "  })\n");
             } else {
-              const _writer_28 = b;
-              _M0IPB13StringBuilderPB6Logger13write__string(_writer_28, "        let _ = ");
-              _M0MPB13StringBuilder13write__objectGsE(_writer_28, prefix);
-              _M0IPB13StringBuilderPB6Logger13write__string(_writer_28, "effect(fn() {\n");
-              const _writer_29 = b;
-              _M0IPB13StringBuilderPB6Logger13write__string(_writer_29, "    ");
-              _M0MPB13StringBuilder13write__objectGsE(_writer_29, prefix);
-              _M0IPB13StringBuilderPB6Logger13write__string(_writer_29, "node_set_attribute(");
-              _M0MPB13StringBuilder13write__objectGsE(_writer_29, el_var);
-              _M0IPB13StringBuilderPB6Logger13write__string(_writer_29, ", \"");
-              _M0MPB13StringBuilder13write__objectGsE(_writer_29, attr_name);
-              _M0IPB13StringBuilderPB6Logger13write__string(_writer_29, "\", (");
-              _M0MPB13StringBuilder13write__objectGsE(_writer_29, expr);
-              _M0IPB13StringBuilderPB6Logger13write__string(_writer_29, ").to_string())\n");
-              const _writer_30 = b;
-              _M0IPB13StringBuilderPB6Logger13write__string(_writer_30, "    Option::None\n");
-              const _writer_31 = b;
-              _M0IPB13StringBuilderPB6Logger13write__string(_writer_31, "  })\n");
+              if (attr_name === "checked") {
+                const _writer_28 = b;
+                _M0MPB13StringBuilder13write__objectGsE(_writer_28, prefix);
+                _M0IPB13StringBuilderPB6Logger13write__string(_writer_28, "node_set_checked(");
+                _M0MPB13StringBuilder13write__objectGsE(_writer_28, el_var);
+                _M0IPB13StringBuilderPB6Logger13write__string(_writer_28, ",if ");
+                _M0MPB13StringBuilder13write__objectGsE(_writer_28, expr);
+                _M0IPB13StringBuilderPB6Logger13write__string(_writer_28, " {true} else {false})\n");
+              } else {
+                if (attr_name === "group") {
+                } else {
+                  const _writer_29 = b;
+                  _M0IPB13StringBuilderPB6Logger13write__string(_writer_29, "        let _ = ");
+                  _M0MPB13StringBuilder13write__objectGsE(_writer_29, prefix);
+                  _M0IPB13StringBuilderPB6Logger13write__string(_writer_29, "effect(fn() {\n");
+                  const _writer_30 = b;
+                  _M0IPB13StringBuilderPB6Logger13write__string(_writer_30, "    ");
+                  _M0MPB13StringBuilder13write__objectGsE(_writer_30, prefix);
+                  _M0IPB13StringBuilderPB6Logger13write__string(_writer_30, "node_set_attribute(");
+                  _M0MPB13StringBuilder13write__objectGsE(_writer_30, el_var);
+                  _M0IPB13StringBuilderPB6Logger13write__string(_writer_30, ", \"");
+                  _M0MPB13StringBuilder13write__objectGsE(_writer_30, attr_name);
+                  _M0IPB13StringBuilderPB6Logger13write__string(_writer_30, "\", (");
+                  _M0MPB13StringBuilder13write__objectGsE(_writer_30, expr);
+                  _M0IPB13StringBuilderPB6Logger13write__string(_writer_30, ").to_string())\n");
+                  const _writer_31 = b;
+                  _M0IPB13StringBuilderPB6Logger13write__string(_writer_31, "    Option::None\n");
+                  const _writer_32 = b;
+                  _M0IPB13StringBuilderPB6Logger13write__string(_writer_32, "  })\n");
+                }
+              }
             }
           }
         }
         const st_var = _M0FP38username4svon8compiler16bind__state__var(expr);
         const event = _M0FP38username4svon8compiler11bind__event(attr_name);
-        const getter = _M0FP38username4svon8compiler12bind__getter(el, attr_name);
+        const getter = _M0FP38username4svon8compiler12bind__getter(attr_name);
         if (st_var.length > 0 && (event.length > 0 && getter.length > 0)) {
-          const _writer_32 = b;
-          _M0IPB13StringBuilderPB6Logger13write__string(_writer_32, "  ");
-          _M0MPB13StringBuilder13write__objectGsE(_writer_32, prefix);
-          _M0IPB13StringBuilderPB6Logger13write__string(_writer_32, "node_add_event_listener(");
-          _M0MPB13StringBuilder13write__objectGsE(_writer_32, el_var);
-          _M0IPB13StringBuilderPB6Logger13write__string(_writer_32, ", \"");
-          _M0MPB13StringBuilder13write__objectGsE(_writer_32, event);
-          _M0IPB13StringBuilderPB6Logger13write__string(_writer_32, "\", fn() {\n");
           const _writer_33 = b;
-          _M0IPB13StringBuilderPB6Logger13write__string(_writer_33, "    ");
-          _M0MPB13StringBuilder13write__objectGsE(_writer_33, st_var);
-          _M0IPB13StringBuilderPB6Logger13write__string(_writer_33, ".set(");
+          _M0IPB13StringBuilderPB6Logger13write__string(_writer_33, "  ");
           _M0MPB13StringBuilder13write__objectGsE(_writer_33, prefix);
-          _M0MPB13StringBuilder13write__objectGsE(_writer_33, getter);
-          _M0IPB13StringBuilderPB6Logger13write__string(_writer_33, "(");
+          _M0IPB13StringBuilderPB6Logger13write__string(_writer_33, "node_add_event_listener(");
           _M0MPB13StringBuilder13write__objectGsE(_writer_33, el_var);
-          _M0IPB13StringBuilderPB6Logger13write__string(_writer_33, "))\n");
+          _M0IPB13StringBuilderPB6Logger13write__string(_writer_33, ", \"");
+          _M0MPB13StringBuilder13write__objectGsE(_writer_33, event);
+          _M0IPB13StringBuilderPB6Logger13write__string(_writer_33, "\", fn() {\n");
+          const _writer_34 = b;
+          _M0IPB13StringBuilderPB6Logger13write__string(_writer_34, "    ");
+          _M0MPB13StringBuilder13write__objectGsE(_writer_34, st_var);
+          _M0IPB13StringBuilderPB6Logger13write__string(_writer_34, ".set(");
+          _M0MPB13StringBuilder13write__objectGsE(_writer_34, prefix);
+          _M0MPB13StringBuilder13write__objectGsE(_writer_34, getter);
+          _M0IPB13StringBuilderPB6Logger13write__string(_writer_34, "(");
+          _M0MPB13StringBuilder13write__objectGsE(_writer_34, el_var);
+          _M0IPB13StringBuilderPB6Logger13write__string(_writer_34, "))\n");
           _M0IPB13StringBuilderPB6Logger13write__string(b, "  })\n");
         }
       }
@@ -2914,14 +2923,14 @@ function _M0FP38username4svon8compiler17generate__element(el, parent, b, el_id, 
     }
   }
   _M0FP38username4svon8compiler15generate__nodes(el.children, el_var, b, el_id, templates, standalone);
-  const _writer_34 = b;
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_34, "  ");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_34, prefix);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_34, "node_append_child(");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_34, parent);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_34, ", ");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_34, el_var);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_34, ")\n");
+  const _writer_35 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_35, "  ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_35, prefix);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_35, "node_append_child(");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_35, parent);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_35, ", ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_35, el_var);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_35, ")\n");
 }
 function _M0FP38username4svon8compiler13generate__for(block, parent, b, el_id, templates, standalone) {
   const prefix = standalone ? "" : "@svon.";
@@ -2929,65 +2938,65 @@ function _M0FP38username4svon8compiler13generate__for(block, parent, b, el_id, t
   el_id.val = el_id.val + 1 | 0;
   const anchor = `_svon_a${id}`;
   const containers = `_svon_c${id}`;
-  const _writer_58 = b;
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_58, "  let ");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_58, anchor);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_58, " = ");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_58, prefix);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_58, "document_create_comment(\"#for\")\n");
   const _writer_59 = b;
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_59, "  ");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_59, prefix);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_59, "node_append_child(");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_59, parent);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_59, ", ");
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_59, "  let ");
   _M0MPB13StringBuilder13write__objectGsE(_writer_59, anchor);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_59, ")\n");
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_59, " = ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_59, prefix);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_59, "document_create_comment(\"#for\")\n");
   const _writer_60 = b;
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_60, "  let ");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_60, containers);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_60, " = Ref(Array::new())\n");
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_60, "  ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_60, prefix);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_60, "node_append_child(");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_60, parent);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_60, ", ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_60, anchor);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_60, ")\n");
   const _writer_61 = b;
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_61, "        let _ = ");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_61, prefix);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_61, "effect(fn() {\n");
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_61, "  let ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_61, containers);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_61, " = Ref(Array::new())\n");
   const _writer_62 = b;
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_62, "    for c in ");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_62, containers);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_62, ".val {\n");
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_62, "        let _ = ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_62, prefix);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_62, "effect(fn() {\n");
   const _writer_63 = b;
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_63, "      ");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_63, prefix);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_63, "node_remove_child(");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_63, parent);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_63, ", c)\n");
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_63, "    for c in ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_63, containers);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_63, ".val {\n");
   const _writer_64 = b;
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_64, "    }\n");
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_64, "      ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_64, prefix);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_64, "node_remove_child(");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_64, parent);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_64, ", c)\n");
   const _writer_65 = b;
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_65, "    ");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_65, containers);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_65, ".val = Array::new()\n");
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_65, "    }\n");
   const _writer_66 = b;
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_66, "    for ");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_66, block.for_expr);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_66, " {\n");
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_66, "    ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_66, containers);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_66, ".val = Array::new()\n");
   const _writer_67 = b;
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_67, "      let _svon_ct = ");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_67, prefix);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_67, "document_create_container()\n");
-  _M0FP38username4svon8compiler15generate__nodes(block.body, "_svon_ct", b, el_id, templates, standalone);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_67, "    for ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_67, block.for_expr);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_67, " {\n");
   const _writer_68 = b;
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_68, "      ");
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_68, "      let _svon_ct = ");
   _M0MPB13StringBuilder13write__objectGsE(_writer_68, prefix);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_68, "node_insert_before(");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_68, parent);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_68, ", _svon_ct, ");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_68, anchor);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_68, ")\n");
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_68, "document_create_container()\n");
+  _M0FP38username4svon8compiler15generate__nodes(block.body, "_svon_ct", b, el_id, templates, standalone);
   const _writer_69 = b;
   _M0IPB13StringBuilderPB6Logger13write__string(_writer_69, "      ");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_69, containers);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_69, ".val.push(_svon_ct)\n");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_69, prefix);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_69, "node_insert_before(");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_69, parent);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_69, ", _svon_ct, ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_69, anchor);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_69, ")\n");
+  const _writer_70 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_70, "      ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_70, containers);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_70, ".val.push(_svon_ct)\n");
   _M0IPB13StringBuilderPB6Logger13write__string(b, "    }\n");
   _M0IPB13StringBuilderPB6Logger13write__string(b, "    Option::None\n");
   _M0IPB13StringBuilderPB6Logger13write__string(b, "  })\n");
@@ -3000,32 +3009,32 @@ function _M0FP38username4svon8compiler12generate__if(block, parent, b, el_id, te
   const self_var = `_svon_s${id}`;
   const branch_var = `_svon_b${id}`;
   const num_branches = (1 + block.else_ifs.length | 0) + 1 | 0;
-  const _writer_39 = b;
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_39, "  let ");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_39, anchor);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_39, " = ");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_39, prefix);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_39, "document_create_comment(\"#if\")\n");
   const _writer_40 = b;
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_40, "  ");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_40, prefix);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_40, "node_append_child(");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_40, parent);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_40, ", ");
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_40, "  let ");
   _M0MPB13StringBuilder13write__objectGsE(_writer_40, anchor);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_40, ")\n");
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_40, " = ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_40, prefix);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_40, "document_create_comment(\"#if\")\n");
+  const _writer_41 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_41, "  ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_41, prefix);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_41, "node_append_child(");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_41, parent);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_41, ", ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_41, anchor);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_41, ")\n");
   const _bind = 0;
   let _tmp = _bind;
   while (true) {
     const j = _tmp;
     if (j < num_branches) {
       const frag = `${self_var}_${_M0MPC13int3Int18to__string_2einner(j, 10)}`;
-      const _writer_41 = b;
-      _M0IPB13StringBuilderPB6Logger13write__string(_writer_41, "  let ");
-      _M0MPB13StringBuilder13write__objectGsE(_writer_41, frag);
-      _M0IPB13StringBuilderPB6Logger13write__string(_writer_41, " = ");
-      _M0MPB13StringBuilder13write__objectGsE(_writer_41, prefix);
-      _M0IPB13StringBuilderPB6Logger13write__string(_writer_41, "document_create_container()\n");
+      const _writer_42 = b;
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_42, "  let ");
+      _M0MPB13StringBuilder13write__objectGsE(_writer_42, frag);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_42, " = ");
+      _M0MPB13StringBuilder13write__objectGsE(_writer_42, prefix);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_42, "document_create_container()\n");
       if (j === 0) {
         _M0FP38username4svon8compiler15generate__nodes(block.body, frag, b, el_id, templates, standalone);
       } else {
@@ -3041,10 +3050,10 @@ function _M0FP38username4svon8compiler12generate__if(block, parent, b, el_id, te
       break;
     }
   }
-  const _writer_42 = b;
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_42, "  let ");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_42, branch_var);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_42, " = Ref(0)\n");
+  const _writer_43 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_43, "  let ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_43, branch_var);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_43, " = Ref(0)\n");
   _M0IPB13StringBuilderPB6Logger13write__string(b, "  ");
   const _bind$2 = 0;
   let _tmp$2 = _bind$2;
@@ -3058,25 +3067,25 @@ function _M0FP38username4svon8compiler12generate__if(block, parent, b, el_id, te
       } else {
         _M0IPB13StringBuilderPB6Logger13write__string(b, " else if ");
       }
-      const _writer_43 = b;
-      _M0MPB13StringBuilder13write__objectGsE(_writer_43, cond);
-      _M0IPB13StringBuilderPB6Logger13write__string(_writer_43, " {\n");
       const _writer_44 = b;
-      _M0IPB13StringBuilderPB6Logger13write__string(_writer_44, "    ");
-      _M0MPB13StringBuilder13write__objectGsE(_writer_44, prefix);
-      _M0IPB13StringBuilderPB6Logger13write__string(_writer_44, "node_insert_before(");
-      _M0MPB13StringBuilder13write__objectGsE(_writer_44, parent);
-      _M0IPB13StringBuilderPB6Logger13write__string(_writer_44, ", ");
-      _M0MPB13StringBuilder13write__objectGsE(_writer_44, frag);
-      _M0IPB13StringBuilderPB6Logger13write__string(_writer_44, ", ");
-      _M0MPB13StringBuilder13write__objectGsE(_writer_44, anchor);
-      _M0IPB13StringBuilderPB6Logger13write__string(_writer_44, ")\n");
+      _M0MPB13StringBuilder13write__objectGsE(_writer_44, cond);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_44, " {\n");
       const _writer_45 = b;
       _M0IPB13StringBuilderPB6Logger13write__string(_writer_45, "    ");
-      _M0MPB13StringBuilder13write__objectGsE(_writer_45, branch_var);
-      _M0IPB13StringBuilderPB6Logger13write__string(_writer_45, ".val = ");
-      _M0MPB13StringBuilder13write__objectGiE(_writer_45, j);
-      _M0IPB13StringBuilderPB6Logger13write__string(_writer_45, "\n");
+      _M0MPB13StringBuilder13write__objectGsE(_writer_45, prefix);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_45, "node_insert_before(");
+      _M0MPB13StringBuilder13write__objectGsE(_writer_45, parent);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_45, ", ");
+      _M0MPB13StringBuilder13write__objectGsE(_writer_45, frag);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_45, ", ");
+      _M0MPB13StringBuilder13write__objectGsE(_writer_45, anchor);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_45, ")\n");
+      const _writer_46 = b;
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_46, "    ");
+      _M0MPB13StringBuilder13write__objectGsE(_writer_46, branch_var);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_46, ".val = ");
+      _M0MPB13StringBuilder13write__objectGiE(_writer_46, j);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_46, "\n");
       _M0IPB13StringBuilderPB6Logger13write__string(b, "  }");
       _tmp$2 = j + 1 | 0;
       continue;
@@ -3085,10 +3094,10 @@ function _M0FP38username4svon8compiler12generate__if(block, parent, b, el_id, te
     }
   }
   _M0IPB13StringBuilderPB6Logger13write__string(b, "\n");
-  const _writer_46 = b;
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_46, "        let _ = ");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_46, prefix);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_46, "effect(fn() {\n");
+  const _writer_47 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_47, "        let _ = ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_47, prefix);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_47, "effect(fn() {\n");
   _M0IPB13StringBuilderPB6Logger13write__string(b, "    let _svon_new = ");
   const _bind$3 = 0;
   let _tmp$3 = _bind$3;
@@ -3097,19 +3106,19 @@ function _M0FP38username4svon8compiler12generate__if(block, parent, b, el_id, te
     if (j < num_branches) {
       const cond = j === 0 ? block.condition : j <= block.else_ifs.length ? _M0MPC15array5Array2atGsE(block.else_ifs, j - 1 | 0).condition : "true";
       if (j === 0) {
-        const _writer_47 = b;
-        _M0IPB13StringBuilderPB6Logger13write__string(_writer_47, "if ");
-        _M0MPB13StringBuilder13write__objectGsE(_writer_47, cond);
-        _M0IPB13StringBuilderPB6Logger13write__string(_writer_47, " { ");
-        _M0MPB13StringBuilder13write__objectGiE(_writer_47, j);
-        _M0IPB13StringBuilderPB6Logger13write__string(_writer_47, " }");
-      } else {
         const _writer_48 = b;
-        _M0IPB13StringBuilderPB6Logger13write__string(_writer_48, " else if ");
+        _M0IPB13StringBuilderPB6Logger13write__string(_writer_48, "if ");
         _M0MPB13StringBuilder13write__objectGsE(_writer_48, cond);
         _M0IPB13StringBuilderPB6Logger13write__string(_writer_48, " { ");
         _M0MPB13StringBuilder13write__objectGiE(_writer_48, j);
         _M0IPB13StringBuilderPB6Logger13write__string(_writer_48, " }");
+      } else {
+        const _writer_49 = b;
+        _M0IPB13StringBuilderPB6Logger13write__string(_writer_49, " else if ");
+        _M0MPB13StringBuilder13write__objectGsE(_writer_49, cond);
+        _M0IPB13StringBuilderPB6Logger13write__string(_writer_49, " { ");
+        _M0MPB13StringBuilder13write__objectGiE(_writer_49, j);
+        _M0IPB13StringBuilderPB6Logger13write__string(_writer_49, " }");
       }
       _tmp$3 = j + 1 | 0;
       continue;
@@ -3117,14 +3126,14 @@ function _M0FP38username4svon8compiler12generate__if(block, parent, b, el_id, te
       break;
     }
   }
-  const _writer_49 = b;
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_49, " else { ");
-  _M0MPB13StringBuilder13write__objectGiE(_writer_49, num_branches);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_49, " }\n");
   const _writer_50 = b;
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_50, "    if _svon_new != ");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_50, branch_var);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_50, ".val {\n");
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_50, " else { ");
+  _M0MPB13StringBuilder13write__objectGiE(_writer_50, num_branches);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_50, " }\n");
+  const _writer_51 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_51, "    if _svon_new != ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_51, branch_var);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_51, ".val {\n");
   _M0IPB13StringBuilderPB6Logger13write__string(b, "      ");
   const _bind$4 = 0;
   let _tmp$4 = _bind$4;
@@ -3133,26 +3142,26 @@ function _M0FP38username4svon8compiler12generate__if(block, parent, b, el_id, te
     if (j < num_branches) {
       const frag = `${self_var}_${_M0MPC13int3Int18to__string_2einner(j, 10)}`;
       if (j === 0) {
-        const _writer_51 = b;
-        _M0IPB13StringBuilderPB6Logger13write__string(_writer_51, "if ");
-        _M0MPB13StringBuilder13write__objectGsE(_writer_51, branch_var);
-        _M0IPB13StringBuilderPB6Logger13write__string(_writer_51, ".val == 0 {");
-      } else {
         const _writer_52 = b;
-        _M0IPB13StringBuilderPB6Logger13write__string(_writer_52, " else if ");
+        _M0IPB13StringBuilderPB6Logger13write__string(_writer_52, "if ");
         _M0MPB13StringBuilder13write__objectGsE(_writer_52, branch_var);
-        _M0IPB13StringBuilderPB6Logger13write__string(_writer_52, ".val == ");
-        _M0MPB13StringBuilder13write__objectGiE(_writer_52, j);
-        _M0IPB13StringBuilderPB6Logger13write__string(_writer_52, " {");
+        _M0IPB13StringBuilderPB6Logger13write__string(_writer_52, ".val == 0 {");
+      } else {
+        const _writer_53 = b;
+        _M0IPB13StringBuilderPB6Logger13write__string(_writer_53, " else if ");
+        _M0MPB13StringBuilder13write__objectGsE(_writer_53, branch_var);
+        _M0IPB13StringBuilderPB6Logger13write__string(_writer_53, ".val == ");
+        _M0MPB13StringBuilder13write__objectGiE(_writer_53, j);
+        _M0IPB13StringBuilderPB6Logger13write__string(_writer_53, " {");
       }
-      const _writer_53 = b;
-      _M0IPB13StringBuilderPB6Logger13write__string(_writer_53, " ");
-      _M0MPB13StringBuilder13write__objectGsE(_writer_53, prefix);
-      _M0IPB13StringBuilderPB6Logger13write__string(_writer_53, "node_remove_child(");
-      _M0MPB13StringBuilder13write__objectGsE(_writer_53, parent);
-      _M0IPB13StringBuilderPB6Logger13write__string(_writer_53, ", ");
-      _M0MPB13StringBuilder13write__objectGsE(_writer_53, frag);
-      _M0IPB13StringBuilderPB6Logger13write__string(_writer_53, ") }\n");
+      const _writer_54 = b;
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_54, " ");
+      _M0MPB13StringBuilder13write__objectGsE(_writer_54, prefix);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_54, "node_remove_child(");
+      _M0MPB13StringBuilder13write__objectGsE(_writer_54, parent);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_54, ", ");
+      _M0MPB13StringBuilder13write__objectGsE(_writer_54, frag);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_54, ") }\n");
       if (j < (num_branches - 1 | 0)) {
         _M0IPB13StringBuilderPB6Logger13write__string(b, "      ");
       }
@@ -3170,24 +3179,24 @@ function _M0FP38username4svon8compiler12generate__if(block, parent, b, el_id, te
     if (j < num_branches) {
       const frag = `${self_var}_${_M0MPC13int3Int18to__string_2einner(j, 10)}`;
       if (j === 0) {
-        const _writer_54 = b;
-        _M0IPB13StringBuilderPB6Logger13write__string(_writer_54, "if _svon_new == 0 {");
-      } else {
         const _writer_55 = b;
-        _M0IPB13StringBuilderPB6Logger13write__string(_writer_55, " else if _svon_new == ");
-        _M0MPB13StringBuilder13write__objectGiE(_writer_55, j);
-        _M0IPB13StringBuilderPB6Logger13write__string(_writer_55, " {");
+        _M0IPB13StringBuilderPB6Logger13write__string(_writer_55, "if _svon_new == 0 {");
+      } else {
+        const _writer_56 = b;
+        _M0IPB13StringBuilderPB6Logger13write__string(_writer_56, " else if _svon_new == ");
+        _M0MPB13StringBuilder13write__objectGiE(_writer_56, j);
+        _M0IPB13StringBuilderPB6Logger13write__string(_writer_56, " {");
       }
-      const _writer_56 = b;
-      _M0IPB13StringBuilderPB6Logger13write__string(_writer_56, " ");
-      _M0MPB13StringBuilder13write__objectGsE(_writer_56, prefix);
-      _M0IPB13StringBuilderPB6Logger13write__string(_writer_56, "node_insert_before(");
-      _M0MPB13StringBuilder13write__objectGsE(_writer_56, parent);
-      _M0IPB13StringBuilderPB6Logger13write__string(_writer_56, ", ");
-      _M0MPB13StringBuilder13write__objectGsE(_writer_56, frag);
-      _M0IPB13StringBuilderPB6Logger13write__string(_writer_56, ", ");
-      _M0MPB13StringBuilder13write__objectGsE(_writer_56, anchor);
-      _M0IPB13StringBuilderPB6Logger13write__string(_writer_56, ") }\n");
+      const _writer_57 = b;
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_57, " ");
+      _M0MPB13StringBuilder13write__objectGsE(_writer_57, prefix);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_57, "node_insert_before(");
+      _M0MPB13StringBuilder13write__objectGsE(_writer_57, parent);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_57, ", ");
+      _M0MPB13StringBuilder13write__objectGsE(_writer_57, frag);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_57, ", ");
+      _M0MPB13StringBuilder13write__objectGsE(_writer_57, anchor);
+      _M0IPB13StringBuilderPB6Logger13write__string(_writer_57, ") }\n");
       if (j < (num_branches - 1 | 0)) {
         _M0IPB13StringBuilderPB6Logger13write__string(b, "      ");
       }
@@ -3197,78 +3206,13 @@ function _M0FP38username4svon8compiler12generate__if(block, parent, b, el_id, te
       break;
     }
   }
-  const _writer_57 = b;
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_57, "      ");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_57, branch_var);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_57, ".val = _svon_new\n");
+  const _writer_58 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_58, "      ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_58, branch_var);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_58, ".val = _svon_new\n");
   _M0IPB13StringBuilderPB6Logger13write__string(b, "    }\n");
   _M0IPB13StringBuilderPB6Logger13write__string(b, "    Option::None\n");
   _M0IPB13StringBuilderPB6Logger13write__string(b, "  })\n");
-}
-function _M0FP38username4svon8compiler15transform__line(line, standalone) {
-  if (line === "") {
-    return "";
-  }
-  const _bind = "//";
-  if (_M0MPC16string6String11has__prefix(line, new _M0TPC16string10StringView(_bind, 0, _bind.length))) {
-    return line;
-  }
-  if (standalone) {
-    return line;
-  } else {
-    const result = new _M0TPB8MutLocalGsE(line);
-    const _tmp = result.val;
-    const _bind$2 = "state(";
-    const _tmp$2 = new _M0TPC16string10StringView(_bind$2, 0, _bind$2.length);
-    const _bind$3 = "@svon.state(";
-    result.val = _M0MPC16string6String12replace__all(_tmp, _tmp$2, new _M0TPC16string10StringView(_bind$3, 0, _bind$3.length));
-    const _tmp$3 = result.val;
-    const _bind$4 = "derived(";
-    const _tmp$4 = new _M0TPC16string10StringView(_bind$4, 0, _bind$4.length);
-    const _bind$5 = "@svon.derived(";
-    result.val = _M0MPC16string6String12replace__all(_tmp$3, _tmp$4, new _M0TPC16string10StringView(_bind$5, 0, _bind$5.length));
-    const _tmp$5 = result.val;
-    const _bind$6 = "effect(";
-    const _tmp$6 = new _M0TPC16string10StringView(_bind$6, 0, _bind$6.length);
-    const _bind$7 = "@svon.effect(";
-    result.val = _M0MPC16string6String12replace__all(_tmp$5, _tmp$6, new _M0TPC16string10StringView(_bind$7, 0, _bind$7.length));
-    const _tmp$7 = result.val;
-    const _bind$8 = "DomNode";
-    const _tmp$8 = new _M0TPC16string10StringView(_bind$8, 0, _bind$8.length);
-    const _bind$9 = "@svon.DomNode";
-    result.val = _M0MPC16string6String12replace__all(_tmp$7, _tmp$8, new _M0TPC16string10StringView(_bind$9, 0, _bind$9.length));
-    const _tmp$9 = result.val;
-    const _bind$10 = "dom_debug(";
-    const _tmp$10 = new _M0TPC16string10StringView(_bind$10, 0, _bind$10.length);
-    const _bind$11 = "@svon.dom_debug(";
-    result.val = _M0MPC16string6String12replace__all(_tmp$9, _tmp$10, new _M0TPC16string10StringView(_bind$11, 0, _bind$11.length));
-    const _tmp$11 = result.val;
-    const _bind$12 = "console.log(";
-    const _tmp$12 = new _M0TPC16string10StringView(_bind$12, 0, _bind$12.length);
-    const _bind$13 = "@svon.console_log(";
-    result.val = _M0MPC16string6String12replace__all(_tmp$11, _tmp$12, new _M0TPC16string10StringView(_bind$13, 0, _bind$13.length));
-    const _tmp$13 = result.val;
-    const _bind$14 = "console.info(";
-    const _tmp$14 = new _M0TPC16string10StringView(_bind$14, 0, _bind$14.length);
-    const _bind$15 = "@svon.console_info(";
-    result.val = _M0MPC16string6String12replace__all(_tmp$13, _tmp$14, new _M0TPC16string10StringView(_bind$15, 0, _bind$15.length));
-    const _tmp$15 = result.val;
-    const _bind$16 = "console.warn(";
-    const _tmp$16 = new _M0TPC16string10StringView(_bind$16, 0, _bind$16.length);
-    const _bind$17 = "@svon.console_warn(";
-    result.val = _M0MPC16string6String12replace__all(_tmp$15, _tmp$16, new _M0TPC16string10StringView(_bind$17, 0, _bind$17.length));
-    const _tmp$17 = result.val;
-    const _bind$18 = "console.error(";
-    const _tmp$18 = new _M0TPC16string10StringView(_bind$18, 0, _bind$18.length);
-    const _bind$19 = "@svon.console_info(";
-    result.val = _M0MPC16string6String12replace__all(_tmp$17, _tmp$18, new _M0TPC16string10StringView(_bind$19, 0, _bind$19.length));
-    const _tmp$19 = result.val;
-    const _bind$20 = "console.debug(";
-    const _tmp$20 = new _M0TPC16string10StringView(_bind$20, 0, _bind$20.length);
-    const _bind$21 = "@svon.console_info(";
-    result.val = _M0MPC16string6String12replace__all(_tmp$19, _tmp$20, new _M0TPC16string10StringView(_bind$21, 0, _bind$21.length));
-    return result.val;
-  }
 }
 function _M0FP38username4svon8compiler16generate__script(script, b, standalone, script_start_line) {
   const _bind = "\n";
@@ -3304,12 +3248,12 @@ function _M0FP38username4svon8compiler16generate__script(script, b, standalone, 
 }
 function _M0FP38username4svon8compiler26generate__style__injection(css, b, standalone) {
   const prefix = standalone ? "" : "@svon.";
-  const _writer_35 = b;
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_35, "  let style_el : ");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_35, prefix);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_35, "DomNode = ");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_35, prefix);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_35, "document_create_element(\"style\")\n");
+  const _writer_36 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_36, "  let style_el : ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_36, prefix);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_36, "DomNode = ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_36, prefix);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_36, "document_create_element(\"style\")\n");
   const _bind = "\"";
   const _tmp = new _M0TPC16string10StringView(_bind, 0, _bind.length);
   const _bind$2 = "\\\"";
@@ -3318,20 +3262,20 @@ function _M0FP38username4svon8compiler26generate__style__injection(css, b, stand
   const _tmp$3 = new _M0TPC16string10StringView(_bind$3, 0, _bind$3.length);
   const _bind$4 = "\\n";
   const escaped = _M0MPC16string6String12replace__all(_tmp$2, _tmp$3, new _M0TPC16string10StringView(_bind$4, 0, _bind$4.length));
-  const _writer_36 = b;
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_36, "  ");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_36, prefix);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_36, "node_set_text_content(style_el, \"");
-  _M0MPB13StringBuilder13write__objectGsE(_writer_36, escaped);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_36, "\")\n");
   const _writer_37 = b;
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_37, "  let head = ");
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_37, "  ");
   _M0MPB13StringBuilder13write__objectGsE(_writer_37, prefix);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_37, "document_head()\n");
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_37, "node_set_text_content(style_el, \"");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_37, escaped);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_37, "\")\n");
   const _writer_38 = b;
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_38, "  ");
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_38, "  let head = ");
   _M0MPB13StringBuilder13write__objectGsE(_writer_38, prefix);
-  _M0IPB13StringBuilderPB6Logger13write__string(_writer_38, "node_append_child(head, style_el)\n");
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_38, "document_head()\n");
+  const _writer_39 = b;
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_39, "  ");
+  _M0MPB13StringBuilder13write__objectGsE(_writer_39, prefix);
+  _M0IPB13StringBuilderPB6Logger13write__string(_writer_39, "node_append_child(head, style_el)\n");
 }
 function _M0FP38username4svon8compiler18collect__fn__names(expr, calls) {
   const s = expr;
